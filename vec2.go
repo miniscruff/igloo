@@ -10,16 +10,17 @@ type Vec2 struct {
 	X, Y float64
 }
 
-func (v *Vec2) String() string {
-	return fmt.Sprintf("Vec2(%v, %v)", v.X, v.Y)
-}
-
 var (
 	// Vec2Zero is a Vec2 of (0, 0)
 	Vec2Zero = Vec2{0, 0}
 	// Vec2One is a Vec2 of (1, 1)
 	Vec2One = Vec2{1, 1}
 )
+
+// String returns vec2 as a string
+func (v *Vec2) String() string {
+	return fmt.Sprintf("Vec2(%v, %v)", v.X, v.Y)
+}
 
 // Add other to us
 func (v Vec2) Add(other Vec2) Vec2 {
@@ -41,7 +42,8 @@ func (v Vec2) SubScalar(scalar float64) Vec2 {
 	return Vec2{X: v.X - scalar, Y: v.Y - scalar}
 }
 
-// Unit is a 1 unit vector in the same direction
+// Unit is a 1 unit vector in the same direction as v.
+// Unless v is (0,0) in which case it returns (0,0).
 func (v Vec2) Unit() Vec2 {
 	mag := v.Mag()
 	if mag == 0 {
@@ -96,7 +98,8 @@ func (v Vec2) Cross(other Vec2) float64 {
 	return v.X*other.X - v.Y*other.Y
 }
 
-// Map applies a function to both X and Y components and returns a new Vec2
+// Map applies a function to both X and Y components and
+// returns a new Vec2 of the result
 func (v Vec2) Map(fun func(float64) float64) Vec2 {
 	return Vec2{
 		X: fun(v.X),
@@ -104,7 +107,7 @@ func (v Vec2) Map(fun func(float64) float64) Vec2 {
 	}
 }
 
-// Vec2FromAngle returns a vector 2 from an angle in radians
+// Vec2FromAngle returns a Vec2 from an angle in radians
 func Vec2FromAngle(angle float64) Vec2 {
 	sin, cos := math.Sincos(angle)
 	return Vec2{X: cos, Y: sin}
