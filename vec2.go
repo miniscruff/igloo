@@ -21,10 +21,6 @@ var (
 	Vec2One = Vec2{1, 1}
 )
 
-func NewVec2(x, y float64) Vec2 {
-	return Vec2{X: x, Y: y}
-}
-
 // Add other to us
 func (v Vec2) Add(other Vec2) Vec2 {
 	return Vec2{X: v.X + other.X, Y: v.Y + other.Y}

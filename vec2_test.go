@@ -21,27 +21,27 @@ var _ = Describe("Vec2", func() {
 	})
 
 	It("can multiply a vector", func() {
-		a := igloo.NewVec2(10, 20)
-		Expect(a.MulScalar(3)).To(Equal(igloo.NewVec2(30, 60)))
+		a := igloo.Vec2{10, 20}
+		Expect(a.MulScalar(3)).To(Equal(igloo.Vec2{30, 60}))
 	})
 
 	It("can subtract two vectors", func() {
-		a := igloo.NewVec2(12, 6)
-		b := igloo.NewVec2(4, 3)
-		Expect(a.Sub(b)).To(Equal(igloo.NewVec2(8, 3)))
+		a := igloo.Vec2{12, 6}
+		b := igloo.Vec2{4, 3}
+		Expect(a.Sub(b)).To(Equal(igloo.Vec2{8, 3}))
 	})
 
 	It("can subtract a scalar", func() {
-		a := igloo.NewVec2(12, 6)
-		Expect(a.SubScalar(5)).To(Equal(igloo.NewVec2(7, 1)))
+		a := igloo.Vec2{12, 6}
+		Expect(a.SubScalar(5)).To(Equal(igloo.Vec2{7, 1}))
 	})
 
 	It("can unit zero", func() {
-		Expect(igloo.NewVec2(0, 0).Unit()).To(Equal(igloo.Vec2Zero))
+		Expect(igloo.Vec2{0, 0}.Unit()).To(Equal(igloo.Vec2Zero))
 	})
 
 	It("can unit a vector", func() {
-		a := igloo.NewVec2(4, 7)
+		a := igloo.Vec2{4, 7}
 		unit := igloo.Vec2{
 			X: 0.49613893835683387,
 			Y: 0.8682431421244593,
@@ -62,14 +62,14 @@ var _ = Describe("Vec2", func() {
 	})
 
 	It("can get distance between two vectors", func() {
-		a := igloo.NewVec2(7, 7)
-		b := igloo.NewVec2(4, 3)
+		a := igloo.Vec2{7, 7}
+		b := igloo.Vec2{4, 3}
 		Expect(a.Dist(b)).To(Equal(5.0))
 	})
 
 	It("can get squared distance between two vectors", func() {
-		a := igloo.NewVec2(7, 7)
-		b := igloo.NewVec2(4, 3)
+		a := igloo.Vec2{7, 7}
+		b := igloo.Vec2{4, 3}
 		Expect(a.SqrDist(b)).To(Equal(25.0))
 	})
 
