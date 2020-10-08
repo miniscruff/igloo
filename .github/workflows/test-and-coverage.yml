@@ -1,39 +1,26 @@
-name: Go
-
+name: unit test and coverage
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
 jobs:
-
-  build:
-    name: Build
+  unit-test:
+    name: Unit test and coverage
     runs-on: ubuntu-latest
     steps:
-
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
         go-version: ^1.14
       id: go
-
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
-
     - name: Get dependencies
       run: |
         go get -v -t -d ./...
-
     - name: Test
-      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./... 
-
-    - name: golangci-lint
-      uses: golangci/golangci-lint-action@v2
-      with:
-        version: v1.29
-
+      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
     - name: Coverage
       uses: codecov/codecov-action@v1
       with:
