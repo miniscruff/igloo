@@ -47,6 +47,7 @@ func (v Vec2) Unit() Vec2 {
 	if mag == 0 {
 		return Vec2Zero
 	}
+
 	return Vec2{v.X / mag, v.Y / mag}
 }
 
