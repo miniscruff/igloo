@@ -36,7 +36,7 @@ func (v Vec2) Sub(other Vec2) Vec2 {
 	return Vec2{X: v.X - other.X, Y: v.Y - other.Y}
 }
 
-// SubScalar substracts both elements by a scalar
+// SubScalar subtracts both elements by a scalar
 func (v Vec2) SubScalar(scalar float64) Vec2 {
 	return Vec2{X: v.X - scalar, Y: v.Y - scalar}
 }

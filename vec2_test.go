@@ -1,9 +1,10 @@
 package igloo_test
 
 import (
+	"math"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"math"
 
 	"github.com/miniscruff/igloo"
 )
