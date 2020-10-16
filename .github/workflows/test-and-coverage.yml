@@ -1,4 +1,4 @@
-name: unit test and coverage
+name: tests
 on:
   push:
     branches: [ main ]
