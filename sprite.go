@@ -60,20 +60,24 @@ func (s *Sprite) createGeoM() ebiten.GeoM {
 	intWidth, intHeight := s.Image.Size()
 	imageWidth := float64(intWidth)
 	imageHeight := float64(intHeight)
+
 	if imageWidth != s.width || imageHeight != s.height {
 		geom.Scale(s.width/imageWidth, s.height/imageHeight)
 	}
+
 	if s.anchor != Vec2Zero {
 		geom.Translate(
 			-s.width*s.anchor.X,
 			-s.height*s.anchor.Y,
 		)
 	}
+
 	if s.Transform.Rotation() != 0 {
 		geom.Rotate(s.Transform.Rotation())
 	}
 
 	geom.Translate(s.Transform.X(), s.Transform.Y())
+
 	return geom
 }
 
@@ -96,6 +100,7 @@ func (s *Sprite) Draw(canvas Canvaser, camera Camera) {
 	if s.inView {
 		canvas.DrawImage(s.Image, s.options)
 	}
+
 	s.Clean()
 }
 
@@ -113,7 +118,9 @@ func NewSpriteSize(image *ebiten.Image, transform *Transform, width, height floa
 	return NewSpriteAnchorSize(image, transform, Vec2Zero, width, height)
 }
 
-func NewSpriteAnchorSize(image *ebiten.Image, transform *Transform, anchor Vec2, width, height float64) *Sprite {
+func NewSpriteAnchorSize(
+	image *ebiten.Image, transform *Transform, anchor Vec2, width, height float64,
+) *Sprite {
 	return &Sprite{
 		Image:     image,
 		Transform: transform,

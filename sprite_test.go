@@ -4,14 +4,17 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/miniscruff/igloo"
 	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
+
+	"github.com/miniscruff/igloo"
 )
 
 func emptyImage() *ebiten.Image {
 	loadedImage := ebiten.NewImage(10, 10)
 	loadedImage.Fill(color.RGBA{255, 255, 255, 255})
+
 	return loadedImage
 }
 
