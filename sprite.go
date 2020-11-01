@@ -4,7 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Sprite represents an renderable element in the world.
+// Sprite represents a renderable element in the world.
 type Sprite struct {
 	Image     *ebiten.Image
 	Transform *Transform
@@ -19,36 +19,51 @@ type Sprite struct {
 	geom    ebiten.GeoM
 }
 
+// IsDirty returns whether or not our internal state has changed since last
+// drawing. When dirty our next drawing attempt will refresh drawing values.
 func (s *Sprite) IsDirty() bool {
 	return s.isDirty
 }
 
+// Clean resets our dirty state, automatically called when drawing
 func (s *Sprite) Clean() {
 	s.isDirty = false
 }
 
+// Anchor determines our rotation point.
 func (s *Sprite) Anchor() Vec2 {
 	return s.anchor
 }
 
+// SetAnchor will change our rotation point.
+// Will also mark the sprite as dirty.
+// (0, 0) will rotate around the top left
+// (0.5, 0.5) will rotate around the center
+// (1, 1) will rotate around the bottom right
 func (s *Sprite) SetAnchor(anchor Vec2) {
 	s.anchor = anchor
 	s.isDirty = true
 }
 
+// Width returns our drawing width
 func (s *Sprite) Width() float64 {
 	return s.width
 }
 
+// SetWidth will change our drawing width.
+// Will also mark the sprite as dirty.
 func (s *Sprite) SetWidth(width float64) {
 	s.width = width
 	s.isDirty = true
 }
 
+// Height returns our drawing height
 func (s *Sprite) Height() float64 {
 	return s.height
 }
 
+// SetHeight will change our drawing height.
+// Will also mark the sprite as dirty.
 func (s *Sprite) SetHeight(height float64) {
 	s.height = height
 	s.isDirty = true
@@ -81,6 +96,9 @@ func (s *Sprite) createGeoM() ebiten.GeoM {
 	return geom
 }
 
+// Draw will render the sprite onto the canvas.
+// If our transform, sprite or camera are dirty then we will update internal
+// values accordingly.
 func (s *Sprite) Draw(canvas Canvaser, camera Camera) {
 	transformDirty := s.Transform.IsDirty()
 	if transformDirty || s.IsDirty() {
@@ -104,20 +122,27 @@ func (s *Sprite) Draw(canvas Canvaser, camera Camera) {
 	s.Clean()
 }
 
+// NewSprite will create a basic sprite from image and transform.
+// Anchor defaults to (0,0) and size will default to the image size.
 func NewSprite(image *ebiten.Image, transform *Transform) *Sprite {
 	w, h := image.Size()
 	return NewSpriteAnchorSize(image, transform, Vec2Zero, float64(w), float64(h))
 }
 
+// NewSpriteAnchor will create a sprite with a custom anchor.
+// Size will default to the image size.
 func NewSpriteAnchor(image *ebiten.Image, transform *Transform, anchor Vec2) *Sprite {
 	w, h := image.Size()
 	return NewSpriteAnchorSize(image, transform, anchor, float64(w), float64(h))
 }
 
+// NewSpriteSize will create a sprite with a custom size.
+// Anchor defaults to (0,0)
 func NewSpriteSize(image *ebiten.Image, transform *Transform, width, height float64) *Sprite {
 	return NewSpriteAnchorSize(image, transform, Vec2Zero, width, height)
 }
 
+// NewSpriteAnchorSize will create a sprite with a custom anchor and size
 func NewSpriteAnchorSize(
 	image *ebiten.Image, transform *Transform, anchor Vec2, width, height float64,
 ) *Sprite {
