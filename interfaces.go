@@ -30,7 +30,7 @@ type Scene interface {
 	// Setup is used to handle all the loading of content and elements.
 	// You should load all content and data here instead of a constructor function.
 	// This way the LoadScene on the Game can transition between scenes.
-	Setup(*Game)
+	Setup(Game)
 
 	// Update all game elements.
 	Update(deltaTime float64)
