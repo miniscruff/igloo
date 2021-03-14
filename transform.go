@@ -25,6 +25,9 @@ func (t *Transform) X() float64 {
 
 // SetX will change the x value and mark us as dirty.
 func (t *Transform) SetX(x float64) {
+	if t.x == x {
+		return
+	}
 	t.x = x
 	t.isDirty = true
 }
@@ -36,6 +39,9 @@ func (t *Transform) Y() float64 {
 
 // SetY will change the y value and mark us as dirty.
 func (t *Transform) SetY(y float64) {
+	if t.y == y {
+		return
+	}
 	t.y = y
 	t.isDirty = true
 }
@@ -47,6 +53,9 @@ func (t *Transform) Rotation() float64 {
 
 // SetRotation will change the rotation value and mark us as dirty.
 func (t *Transform) SetRotation(rotation float64) {
+	if t.rotation == rotation {
+		return
+	}
 	t.rotation = rotation
 	t.isDirty = true
 }
@@ -58,9 +67,8 @@ func (t *Transform) GetPosition() (float64, float64) {
 
 // SetPosition will change both x and y values as well as marking us as dirty.
 func (t *Transform) SetPosition(x, y float64) {
-	t.x = x
-	t.y = y
-	t.isDirty = true
+	t.SetX(x)
+	t.SetY(y)
 }
 
 // Translate will move x and y by dx and dy as well as marking as dirty.

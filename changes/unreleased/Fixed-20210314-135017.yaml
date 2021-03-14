@@ -1,0 +1,2 @@
+kind: Fixed
+body: Transform flagged as dirty if setting to the same value
