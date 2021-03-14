@@ -103,6 +103,15 @@ var _ = Describe("Sprite", func() {
 		Expect(sprite.Width()).To(Equal(20.0))
 	})
 
+	It("does not dirty if the same", func() {
+		sprite := igloo.NewSprite(blank, transform)
+		sprite.Clean()
+		sprite.SetAnchor(sprite.Anchor())
+		sprite.SetWidth(sprite.Width())
+		sprite.SetHeight(sprite.Height())
+		Expect(sprite.IsDirty()).NotTo(BeTrue())
+	})
+
 	It("can change height", func() {
 		sprite := igloo.NewSprite(blank, transform)
 		sprite.Clean()

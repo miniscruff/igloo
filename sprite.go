@@ -41,6 +41,9 @@ func (s *Sprite) Anchor() Vec2 {
 // (0.5, 0.5) will rotate around the center
 // (1, 1) will rotate around the bottom right
 func (s *Sprite) SetAnchor(anchor Vec2) {
+	if s.anchor == anchor {
+		return
+	}
 	s.anchor = anchor
 	s.isDirty = true
 }
@@ -53,6 +56,9 @@ func (s *Sprite) Width() float64 {
 // SetWidth will change our drawing width.
 // Will also mark the sprite as dirty.
 func (s *Sprite) SetWidth(width float64) {
+	if s.width == width {
+		return
+	}
 	s.width = width
 	s.isDirty = true
 }
@@ -65,6 +71,9 @@ func (s *Sprite) Height() float64 {
 // SetHeight will change our drawing height.
 // Will also mark the sprite as dirty.
 func (s *Sprite) SetHeight(height float64) {
+	if s.height == height {
+		return
+	}
 	s.height = height
 	s.isDirty = true
 }
