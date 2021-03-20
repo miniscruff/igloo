@@ -28,6 +28,7 @@ func (t *Transform) SetX(x float64) {
 	if t.x == x {
 		return
 	}
+
 	t.x = x
 	t.isDirty = true
 }
@@ -42,6 +43,7 @@ func (t *Transform) SetY(y float64) {
 	if t.y == y {
 		return
 	}
+
 	t.y = y
 	t.isDirty = true
 }
@@ -56,6 +58,7 @@ func (t *Transform) SetRotation(rotation float64) {
 	if t.rotation == rotation {
 		return
 	}
+
 	t.rotation = rotation
 	t.isDirty = true
 }

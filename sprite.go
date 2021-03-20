@@ -44,6 +44,7 @@ func (s *Sprite) SetAnchor(anchor Vec2) {
 	if s.anchor == anchor {
 		return
 	}
+
 	s.anchor = anchor
 	s.isDirty = true
 }
@@ -59,6 +60,7 @@ func (s *Sprite) SetWidth(width float64) {
 	if s.width == width {
 		return
 	}
+
 	s.width = width
 	s.isDirty = true
 }
@@ -74,6 +76,7 @@ func (s *Sprite) SetHeight(height float64) {
 	if s.height == height {
 		return
 	}
+
 	s.height = height
 	s.isDirty = true
 }
