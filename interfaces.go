@@ -1,6 +1,10 @@
 package igloo
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"io/fs"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 // Dirtier allows structs to track when they are changed and only apply
 // complex changes when there is something new to update.
@@ -21,7 +25,7 @@ type Game interface {
 	// This is to allow a clean transition from one scene to another by allowing the
 	// previous scene to be disposed before the new scene is setup.
 	// Game Logic > Dispose current scene > Setup new scene.
-	LoadScene(Scene)
+	LoadScene(Scene) error
 }
 
 // Scene is a core component of logic and rendering.
@@ -30,7 +34,7 @@ type Scene interface {
 	// Setup is used to handle all the loading of content and elements.
 	// You should load all content and data here instead of a constructor function.
 	// This way the LoadScene on the Game can transition between scenes.
-	Setup(Game)
+	Setup(Game, fs.FS) error
 
 	// Update all game elements.
 	Update(deltaTime float64)

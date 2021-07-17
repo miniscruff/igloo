@@ -4,6 +4,18 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// SpriteConfig determines the starting state of our sprite
+type SpriteConfig struct {
+	Image     *ebiten.Image
+	Transform *Transform
+	// Value of 0 will use the image width
+	Width float64
+	// Value of 0 will use the image height
+	Height float64
+	// Defaults to top left
+	Anchor Vec2
+}
+
 // Sprite represents a renderable element in the world.
 type Sprite struct {
 	Image     *ebiten.Image
@@ -81,6 +93,10 @@ func (s *Sprite) SetHeight(height float64) {
 	s.isDirty = true
 }
 
+func (s *Sprite) Size() (float64, float64) {
+	return s.width, s.height
+}
+
 func (s *Sprite) createGeoM() ebiten.GeoM {
 	geom := ebiten.GeoM{}
 
@@ -136,35 +152,25 @@ func (s *Sprite) Draw(canvas Canvaser, camera Camera) {
 
 // NewSprite will create a basic sprite from image and transform.
 // Anchor defaults to (0,0) and size will default to the image size.
-func NewSprite(image *ebiten.Image, transform *Transform) *Sprite {
-	w, h := image.Size()
-	return NewSpriteAnchorSize(image, transform, Vec2Zero, float64(w), float64(h))
-}
+func NewSprite(config SpriteConfig) *Sprite {
+	w, h := config.Image.Size()
 
-// NewSpriteAnchor will create a sprite with a custom anchor.
-// Size will default to the image size.
-func NewSpriteAnchor(image *ebiten.Image, transform *Transform, anchor Vec2) *Sprite {
-	w, h := image.Size()
-	return NewSpriteAnchorSize(image, transform, anchor, float64(w), float64(h))
-}
+	if config.Width <= 0 {
+		config.Width = float64(w)
+	}
 
-// NewSpriteSize will create a sprite with a custom size.
-// Anchor defaults to (0,0)
-func NewSpriteSize(image *ebiten.Image, transform *Transform, width, height float64) *Sprite {
-	return NewSpriteAnchorSize(image, transform, Vec2Zero, width, height)
-}
+	if config.Height <= 0 {
+		config.Height = float64(h)
+	}
 
-// NewSpriteAnchorSize will create a sprite with a custom anchor and size
-func NewSpriteAnchorSize(
-	image *ebiten.Image, transform *Transform, anchor Vec2, width, height float64,
-) *Sprite {
 	return &Sprite{
-		Image:     image,
-		Transform: transform,
-		anchor:    anchor,
-		width:     width,
-		height:    height,
+		Image:     config.Image,
+		Transform: config.Transform,
+		anchor:    config.Anchor,
+		width:     config.Width,
+		height:    config.Height,
 		isDirty:   true, // start dirty
+		inView:    false,
 		geom:      ebiten.GeoM{},
 	}
 }
