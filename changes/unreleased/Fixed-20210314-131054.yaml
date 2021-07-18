@@ -1,2 +1,0 @@
-kind: Fixed
-body: Sprite flagged as dirty if setting to the same value
