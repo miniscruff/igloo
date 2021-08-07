@@ -5,6 +5,7 @@ import (
 	"image"
 	"io/fs"
 
+	// import png for image loading
 	_ "image/png"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -17,9 +18,11 @@ func ReadFSFile(fsys fs.FS, path string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("reading font file %v: %w", path, err)
 	}
-	if len(fileBytes) <= 0 {
+
+	if len(fileBytes) == 0 {
 		return nil, fmt.Errorf("font file empty %v", path)
 	}
+
 	return fileBytes, nil
 }
 
@@ -38,6 +41,7 @@ func LoadOpenType(fs fs.FS, path string, options *opentype.FaceOptions) (font.Fa
 	if err != nil {
 		return nil, fmt.Errorf("loading font face for %v: %w", path, err)
 	}
+
 	return face, nil
 }
 

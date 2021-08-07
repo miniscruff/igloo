@@ -5,9 +5,10 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
-	"github.com/miniscruff/igloo"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/miniscruff/igloo"
 )
 
 func emptyImage() *ebiten.Image {

@@ -122,8 +122,6 @@ func (l *Label) cachePosition() {
 	l.locationDirty = false
 }
 
-// TODO: Add option for a camera
-// TODO: Add rotation from transform
 func (l *Label) Draw(screen *ebiten.Image) {
 	l.cacheText()
 	l.cachePosition()
@@ -145,5 +143,6 @@ func NewLabel(options LabelOptions) (*Label, error) {
 	}
 	l.cacheText()
 	l.cachePosition()
+
 	return l, nil
 }
