@@ -134,7 +134,7 @@ func (s *Sprite) Draw(canvas Canvaser, camera Camera) {
 	}
 
 	if transformDirty || s.IsDirty() || camera.IsDirty() {
-		s.inView = camera.IsInView(s.Transform.X(), s.Transform.Y(), s.width, s.height)
+		s.inView = camera.IsInView(s.Transform.Position(), s.width, s.height)
 		if s.inView {
 			screenGeom := camera.WorldToScreen(s.geom)
 			s.options = &ebiten.DrawImageOptions{
