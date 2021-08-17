@@ -2,8 +2,7 @@ package igloo
 
 // Transform holds all data associated to a location
 type Transform struct {
-	x        float64
-	y        float64
+	position Vec2f
 	rotation float64
 	isDirty  bool
 }
@@ -20,31 +19,31 @@ func (t *Transform) Clean() {
 
 // X will return the x value
 func (t *Transform) X() float64 {
-	return t.x
+	return t.position.X
 }
 
 // SetX will change the x value and mark us as dirty.
 func (t *Transform) SetX(x float64) {
-	if t.x == x {
+	if t.position.X == x {
 		return
 	}
 
-	t.x = x
+	t.position.X = x
 	t.isDirty = true
 }
 
 // Y will return the y value
 func (t *Transform) Y() float64 {
-	return t.y
+	return t.position.Y
 }
 
 // SetY will change the y value and mark us as dirty.
 func (t *Transform) SetY(y float64) {
-	if t.y == y {
+	if t.position.Y == y {
 		return
 	}
 
-	t.y = y
+	t.position.Y = y
 	t.isDirty = true
 }
 
@@ -63,30 +62,41 @@ func (t *Transform) SetRotation(rotation float64) {
 	t.isDirty = true
 }
 
-// GetPosition will return both x and y
-func (t *Transform) GetPosition() (float64, float64) {
-	return t.x, t.y
+// Position will return our position vector
+func (t *Transform) Position() Vec2f {
+	return t.position
 }
 
-// SetPosition will change both x and y values as well as marking us as dirty.
-func (t *Transform) SetPosition(x, y float64) {
-	t.SetX(x)
-	t.SetY(y)
+// SetPosition will set our position to a different one
+func (t *Transform) SetPosition(pos Vec2f) {
+	t.SetX(pos.X)
+	t.SetY(pos.Y)
 }
 
-// Translate will move x and y by dx and dy as well as marking as dirty.
-func (t *Transform) Translate(dx, dy float64) {
-	t.x += dx
-	t.y += dy
+// Translate will move x and y by our vec2
+func (t *Transform) Translate(delta Vec2f) {
+	t.position.X += delta.X
+	t.position.Y += delta.Y
+	t.isDirty = true
+}
+
+// TranslateX moves us in the X axis
+func (t *Transform) TranslateX(x float64) {
+	t.position.X += x
+	t.isDirty = true
+}
+
+// TranslateY moves us in the Y axis
+func (t *Transform) TranslateY(y float64) {
+	t.position.Y += y
 	t.isDirty = true
 }
 
 // NewTransform will create a new transform from x,y and rotation.
 // Note that transforms start dirty.
-func NewTransform(x, y, rotation float64) *Transform {
+func NewTransform(position Vec2f, rotation float64) *Transform {
 	return &Transform{
-		x:        x,
-		y:        y,
+		position: position,
 		rotation: rotation,
 		isDirty:  true, // start dirty
 	}

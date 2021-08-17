@@ -31,13 +31,12 @@ type Game interface {
 // Scene is a core component of logic and rendering.
 // The core methods are update and draw to handle game logic and rendering.
 type Scene interface {
+	Updater
+
 	// Setup is used to handle all the loading of content and elements.
 	// You should load all content and data here instead of a constructor function.
 	// This way the LoadScene on the Game can transition between scenes.
 	Setup(Game, fs.FS) error
-
-	// Update all game elements.
-	Update(deltaTime float64)
 
 	// Draw all game elements.
 	Draw(screen *ebiten.Image)
@@ -73,5 +72,15 @@ type Camera interface {
 // Canvaser represents a surface that images can be drawn to.
 // Typically, this would be an *ebiten.Image.
 type Canvaser interface {
-	DrawImage(src *ebiten.Image, op *ebiten.DrawImageOptions)
+	DrawImage(source *ebiten.Image, op *ebiten.DrawImageOptions)
+}
+
+// Updater is the default updating method
+type Updater interface {
+	Update(float64)
+}
+
+// Drawer is the default drawing method
+type Drawer interface {
+	Draw(dest *ebiten.Image, camera Camera)
 }

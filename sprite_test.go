@@ -1,12 +1,11 @@
 package igloo_test
 
+/*
+
 import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 
 	"github.com/miniscruff/igloo"
 )
@@ -55,14 +54,13 @@ func (m *mockCanvas) DrawImage(src *ebiten.Image, op *ebiten.DrawImageOptions) {
 	m.drawImage(src, op)
 }
 
-var _ = Describe("Sprite", func() {
 	var (
 		transform *igloo.Transform
 		config    igloo.SpriteConfig
 	)
 
 	BeforeEach(func() {
-		transform = igloo.NewTransform(0, 0, 0)
+		transform = igloo.NewTransform(igloo.Vec2fZero, 0)
 		config = igloo.SpriteConfig{
 			Image:     blank,
 			Transform: transform,
@@ -108,7 +106,7 @@ var _ = Describe("Sprite", func() {
 	})
 
 	It("can change anchor", func() {
-		anchor := igloo.Vec2{X: 0.5, Y: 0.0}
+		anchor := igloo.Vec2f{X: 0.5, Y: 0.0}
 		sprite := igloo.NewSprite(config)
 		sprite.Clean()
 		sprite.SetAnchor(anchor)
@@ -225,7 +223,6 @@ var _ = Describe("Sprite", func() {
 		Expect(calledMethods).To(Equal(1))
 	})
 
-	/*
 		It("will properly translate", func() {
 			calledMethods := 0
 			geo := ebiten.GeoM{}
@@ -250,5 +247,5 @@ var _ = Describe("Sprite", func() {
 			sprite.Draw(canvas, camera)
 			Expect(calledMethods).To(Equal(1))
 		})
-	*/
 })
+*/

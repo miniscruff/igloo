@@ -5,3 +5,5 @@
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/miniscruff/igloo/unit%20test%20and%20coverage)](https://github.com/miniscruff/igloo/actions?query=workflow%3A"unit+test+and+coverage")
 
 Extension framework to [ebiten](https://github.com/hajimehoshi/ebiten)
+
+**Very much in progress and not production ready**

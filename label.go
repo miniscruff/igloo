@@ -13,19 +13,17 @@ type LabelOptions struct {
 	Transform *Transform
 	Color     color.Color
 	Text      string
-	Anchor    Vec2
+	Anchor    Vec2f
 }
 
 type Label struct {
 	Transform *Transform
 	Color     color.Color
 	// dirty flagging vars
-	font   font.Face
-	text   string
-	anchor Vec2
-	// x and y here are for rendering and is cached from transform and camera
-	x int
-	y int
+	font     font.Face
+	text     string
+	anchor   Vec2f
+	position Vec2i
 	// cache our width and height from bounds
 	width  float64
 	height float64
@@ -80,19 +78,23 @@ func (l *Label) Height() float64 {
 
 // X is the current screen position X, to move the label use Transform
 func (l *Label) X() int {
-	return l.x
+	return l.position.X
 }
 
 // Y is the current screen position Y, to move the label use Transform
 func (l *Label) Y() int {
-	return l.y
+	return l.position.Y
 }
 
-func (l *Label) Anchor() Vec2 {
+func (l *Label) Position() Vec2i {
+	return l.position
+}
+
+func (l *Label) Anchor() Vec2f {
 	return l.anchor
 }
 
-func (l *Label) SetAnchor(newAnchor Vec2) {
+func (l *Label) SetAnchor(newAnchor Vec2f) {
 	if l.anchor != newAnchor {
 		l.anchor = newAnchor
 		l.locationDirty = true
@@ -116,16 +118,18 @@ func (l *Label) cachePosition() {
 		return
 	}
 
-	l.x = int(l.Transform.X() - l.width*l.anchor.X)
-	// text is drawn from the bottom so we have to 1-anchor
-	l.y = int(l.Transform.Y() + l.height*(1-l.anchor.Y))
+	l.position = Vec2i{
+		X: int(l.Transform.X() - l.width*l.anchor.X),
+		// text is drawn from the bottom so we have to 1-anchor
+		Y: int(l.Transform.Y() + l.height*(1-l.anchor.Y)),
+	}
 	l.locationDirty = false
 }
 
-func (l *Label) Draw(screen *ebiten.Image) {
+func (l *Label) Draw(dest *ebiten.Image) {
 	l.cacheText()
 	l.cachePosition()
-	text.Draw(screen, l.text, l.font, l.x, l.y, l.Color)
+	text.Draw(dest, l.text, l.font, l.X(), l.Y(), l.Color)
 }
 
 func NewLabel(options LabelOptions) (*Label, error) {
