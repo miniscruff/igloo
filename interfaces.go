@@ -63,7 +63,7 @@ type Camera interface {
 	WorldToScreen(ebiten.GeoM) ebiten.GeoM
 
 	// ScreenToWorld will convert an X,Y coordinate from the screen to its world position
-	ScreenToWorld(screen Vec2f) Vec2f
+	ScreenToWorld(screen Vec2i) Vec2f
 
 	// IsInView returns whether or not a rectangle is within the cameras view
 	IsInView(position Vec2f, width, height float64) bool
