@@ -63,10 +63,10 @@ type Camera interface {
 	WorldToScreen(ebiten.GeoM) ebiten.GeoM
 
 	// ScreenToWorld will convert an X,Y coordinate from the screen to its world position
-	ScreenToWorld(x, y float64) (float64, float64)
+	ScreenToWorld(screen Vec2f) Vec2f
 
 	// IsInView returns whether or not a rectangle is within the cameras view
-	IsInView(x, y, width, height float64) bool
+	IsInView(position Vec2f, width, height float64) bool
 }
 
 // Canvaser represents a surface that images can be drawn to.

@@ -27,6 +27,11 @@ func (v Vec2f) Add(other Vec2f) Vec2f {
 	return Vec2f{X: v.X + other.X, Y: v.Y + other.Y}
 }
 
+// AddScalar adds scalar to both elements
+func (v Vec2f) AddScalar(scalar float64) Vec2f {
+	return Vec2f{X: v.X + scalar, Y: v.Y + scalar}
+}
+
 // MulScalar multiplies both elements by a scalar
 func (v Vec2f) MulScalar(scalar float64) Vec2f {
 	return Vec2f{X: v.X * scalar, Y: v.Y * scalar}
@@ -40,6 +45,16 @@ func (v Vec2f) Sub(other Vec2f) Vec2f {
 // SubScalar subtracts both elements by a scalar
 func (v Vec2f) SubScalar(scalar float64) Vec2f {
 	return Vec2f{X: v.X - scalar, Y: v.Y - scalar}
+}
+
+// Div other from us
+func (v Vec2f) Div(other Vec2f) Vec2f {
+	return Vec2f{X: v.X / other.X, Y: v.Y / other.Y}
+}
+
+// SubScalar subtracts both elements by a scalar
+func (v Vec2f) DivScalar(scalar float64) Vec2f {
+	return Vec2f{X: v.X / scalar, Y: v.Y / scalar}
 }
 
 // Unit is a 1 unit vector in the same direction as v.
