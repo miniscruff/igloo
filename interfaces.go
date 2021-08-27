@@ -65,7 +65,8 @@ type Camera interface {
 	// ScreenToWorld will convert an X,Y coordinate from the screen to its world position
 	ScreenToWorld(screen Vec2i) Vec2f
 
-	// IsInView returns whether or not a rectangle is within the cameras view
+	// IsInView returns whether or not a rectangle is within the cameras view.
+	// Position is the top,left of our shape.
 	IsInView(position Vec2f, width, height float64) bool
 }
 

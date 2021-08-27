@@ -4,8 +4,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// SpriteConfig determines the starting state of our sprite
-type SpriteConfig struct {
+// SpriteOptions determines the starting state of our sprite
+type SpriteOptions struct {
 	Image     *ebiten.Image
 	Transform *Transform
 	// Value of 0 will use the image width
@@ -134,6 +134,8 @@ func (s *Sprite) Draw(canvas Canvaser, camera Camera) {
 	}
 
 	if transformDirty || s.IsDirty() || camera.IsDirty() {
+		// TODO: position needs to instead be the top,left of our sprite
+		// TODO: will need to take into account rotation as well...
 		s.inView = camera.IsInView(s.Transform.Position(), s.width, s.height)
 		if s.inView {
 			screenGeom := camera.WorldToScreen(s.geom)
@@ -152,23 +154,23 @@ func (s *Sprite) Draw(canvas Canvaser, camera Camera) {
 
 // NewSprite will create a basic sprite from image and transform.
 // Anchor defaults to (0,0) and size will default to the image size.
-func NewSprite(config SpriteConfig) *Sprite {
-	w, h := config.Image.Size()
+func NewSprite(options SpriteOptions) *Sprite {
+	w, h := options.Image.Size()
 
-	if config.Width <= 0 {
-		config.Width = float64(w)
+	if options.Width <= 0 {
+		options.Width = float64(w)
 	}
 
-	if config.Height <= 0 {
-		config.Height = float64(h)
+	if options.Height <= 0 {
+		options.Height = float64(h)
 	}
 
 	return &Sprite{
-		Image:     config.Image,
-		Transform: config.Transform,
-		anchor:    config.Anchor,
-		width:     config.Width,
-		height:    config.Height,
+		Image:     options.Image,
+		Transform: options.Transform,
+		anchor:    options.Anchor,
+		width:     options.Width,
+		height:    options.Height,
 		isDirty:   true, // start dirty
 		inView:    false,
 		geom:      ebiten.GeoM{},
