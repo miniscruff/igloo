@@ -2,7 +2,7 @@ package igloo
 
 // Transform holds all data associated to a location
 type Transform struct {
-	position Vec2f
+	position Vec2
 	rotation float64
 	isDirty  bool
 }

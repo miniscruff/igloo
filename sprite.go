@@ -13,7 +13,7 @@ type SpriteOptions struct {
 	// Value of 0 will use the image height
 	Height float64
 	// Defaults to top left
-	Anchor Vec2f
+	Anchor Vec2
 }
 
 // Sprite represents a renderable element in the world.
@@ -21,7 +21,7 @@ type Sprite struct {
 	Image     *ebiten.Image
 	Transform *Transform
 	// dirty flagging values
-	anchor Vec2f
+	anchor Vec2
 	width  float64
 	height float64
 	// draw cache
@@ -43,7 +43,7 @@ func (s *Sprite) Clean() {
 }
 
 // Anchor determines our rotation point.
-func (s *Sprite) Anchor() Vec2f {
+func (s *Sprite) Anchor() Vec2 {
 	return s.anchor
 }
 
@@ -52,7 +52,7 @@ func (s *Sprite) Anchor() Vec2f {
 // (0, 0) will rotate around the top left
 // (0.5, 0.5) will rotate around the center
 // (1, 1) will rotate around the bottom right
-func (s *Sprite) SetAnchor(anchor Vec2f) {
+func (s *Sprite) SetAnchor(anchor Vec2) {
 	if s.anchor == anchor {
 		return
 	}
@@ -108,7 +108,7 @@ func (s *Sprite) createGeoM() ebiten.GeoM {
 		geom.Scale(s.width/imageWidth, s.height/imageHeight)
 	}
 
-	if s.anchor != Vec2fZero {
+	if s.anchor != Vec2Zero {
 		geom.Translate(
 			-s.width*s.anchor.X,
 			-s.height*s.anchor.Y,

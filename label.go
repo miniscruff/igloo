@@ -1,6 +1,7 @@
 package igloo
 
 import (
+	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -13,7 +14,7 @@ type LabelOptions struct {
 	Transform *Transform
 	Color     color.Color
 	Text      string
-	Anchor    Vec2f
+	Anchor    Vec2
 }
 
 type Label struct {
@@ -22,8 +23,8 @@ type Label struct {
 	// dirty flagging vars
 	font     font.Face
 	text     string
-	anchor   Vec2f
-	position Vec2i
+	anchor   Vec2
+	position image.Point
 	// cache our width and height from bounds
 	width  float64
 	height float64
@@ -86,15 +87,15 @@ func (l *Label) Y() int {
 	return l.position.Y
 }
 
-func (l *Label) Position() Vec2i {
+func (l *Label) Position() image.Point {
 	return l.position
 }
 
-func (l *Label) Anchor() Vec2f {
+func (l *Label) Anchor() Vec2 {
 	return l.anchor
 }
 
-func (l *Label) SetAnchor(newAnchor Vec2f) {
+func (l *Label) SetAnchor(newAnchor Vec2) {
 	if l.anchor != newAnchor {
 		l.anchor = newAnchor
 		l.locationDirty = true
@@ -118,7 +119,7 @@ func (l *Label) cachePosition() {
 		return
 	}
 
-	l.position = Vec2i{
+	l.position = image.Point{
 		X: int(l.Transform.X() - l.width*l.anchor.X),
 		// text is drawn from the bottom so we have to 1-anchor
 		Y: int(l.Transform.Y() + l.height*(1-l.anchor.Y)),

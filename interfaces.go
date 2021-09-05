@@ -1,6 +1,7 @@
 package igloo
 
 import (
+	"image"
 	"io/fs"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -63,11 +64,11 @@ type Camera interface {
 	WorldToScreen(ebiten.GeoM) ebiten.GeoM
 
 	// ScreenToWorld will convert an X,Y coordinate from the screen to its world position
-	ScreenToWorld(screen Vec2i) Vec2f
+	ScreenToWorld(screen image.Point) Vec2
 
 	// IsInView returns whether or not a rectangle is within the cameras view.
 	// Position is the top,left of our shape.
-	IsInView(position Vec2f, width, height float64) bool
+	IsInView(position Vec2, width, height float64) bool
 }
 
 // Canvaser represents a surface that images can be drawn to.
