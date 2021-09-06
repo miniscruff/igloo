@@ -63,18 +63,18 @@ func (t *Transform) SetRotation(rotation float64) {
 }
 
 // Position will return our position vector
-func (t *Transform) Position() Vec2f {
+func (t *Transform) Position() Vec2 {
 	return t.position
 }
 
 // SetPosition will set our position to a different one
-func (t *Transform) SetPosition(pos Vec2f) {
+func (t *Transform) SetPosition(pos Vec2) {
 	t.SetX(pos.X)
 	t.SetY(pos.Y)
 }
 
 // Translate will move x and y by our vec2
-func (t *Transform) Translate(delta Vec2f) {
+func (t *Transform) Translate(delta Vec2) {
 	t.position.X += delta.X
 	t.position.Y += delta.Y
 	t.isDirty = true
@@ -94,7 +94,7 @@ func (t *Transform) TranslateY(y float64) {
 
 // NewTransform will create a new transform from x,y and rotation.
 // Note that transforms start dirty.
-func NewTransform(position Vec2f, rotation float64) *Transform {
+func NewTransform(position Vec2, rotation float64) *Transform {
 	return &Transform{
 		position: position,
 		rotation: rotation,
