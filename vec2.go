@@ -132,3 +132,8 @@ func Vec2FromAngle(angle float64) Vec2 {
 	sin, cos := math.Sincos(angle)
 	return Vec2{X: cos, Y: sin}
 }
+
+// Vec2FromPoint returns a Vec2 from an image point
+func Vec2FromPoint(pt image.Point) Vec2 {
+	return Vec2{X: float64(pt.X), Y: float64(pt.Y)}
+}
