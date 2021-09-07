@@ -33,6 +33,11 @@ func (v Vec2) AddScalar(scalar float64) Vec2 {
 	return Vec2{X: v.X + scalar, Y: v.Y + scalar}
 }
 
+// Mul multiplies other to us
+func (v Vec2) Mul(other Vec2) Vec2 {
+	return Vec2{X: v.X * other.X, Y: v.Y * other.Y}
+}
+
 // MulScalar multiplies both elements by a scalar
 func (v Vec2) MulScalar(scalar float64) Vec2 {
 	return Vec2{X: v.X * scalar, Y: v.Y * scalar}
