@@ -142,3 +142,11 @@ func Vec2FromAngle(angle float64) Vec2 {
 func Vec2FromPoint(pt image.Point) Vec2 {
 	return Vec2{X: float64(pt.X), Y: float64(pt.Y)}
 }
+
+// Vec2Lerp returns a Vec2 as a linear interpolation between two vectors
+func Vec2Lerp(start, end Vec2, percent float64) Vec2 {
+	return Vec2{
+		X: start.X + (end.X-start.X)*percent,
+		Y: start.Y + (end.Y-start.Y)*percent,
+	}
+}
