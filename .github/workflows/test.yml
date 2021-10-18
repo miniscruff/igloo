@@ -28,7 +28,7 @@ jobs:
       run: "Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &"
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2.3.5
 
     - name: Get dependencies
       run: |
