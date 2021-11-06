@@ -134,11 +134,10 @@ func (s *Sprite) Draw(canvas Canvaser, camera Camera) {
 	}
 
 	if transformDirty || s.IsDirty() || camera.IsDirty() {
-		// TODO: position needs to instead be the top,left of our sprite
-		// TODO: will need to take into account rotation as well...
 		anchorOffset := s.anchor.Mul(Vec2{X: s.width, Y: s.height})
 		topLeft := s.Transform.Position().Sub(anchorOffset)
 		s.inView = camera.IsInView(topLeft, s.width, s.height)
+
 		if s.inView {
 			screenGeom := camera.WorldToScreen(s.geom)
 			s.options = &ebiten.DrawImageOptions{
