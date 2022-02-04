@@ -1,4 +1,4 @@
-package igloo
+package mathf
 
 import (
 	"fmt"

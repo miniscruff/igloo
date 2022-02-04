@@ -1,27 +1,16 @@
-package igloo
+package graphics
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/miniscruff/igloo/mathf"
 )
-
-// SpriteOptions determines the starting state of our sprite
-type SpriteOptions struct {
-	Image     *ebiten.Image
-	Transform *Transform
-	// Value of 0 will use the image width
-	Width float64
-	// Value of 0 will use the image height
-	Height float64
-	// Defaults to top left
-	Anchor Vec2
-}
 
 // Sprite represents a renderable element in the world.
 type Sprite struct {
 	Image     *ebiten.Image
-	Transform *Transform
+	Transform *mathf.Transform
 	// dirty flagging values
-	anchor Vec2
+	anchor mathf.Vec2
 	width  float64
 	height float64
 	// draw cache
@@ -43,7 +32,7 @@ func (s *Sprite) Clean() {
 }
 
 // Anchor determines our rotation point.
-func (s *Sprite) Anchor() Vec2 {
+func (s *Sprite) Anchor() mathf.Vec2 {
 	return s.anchor
 }
 
@@ -52,7 +41,7 @@ func (s *Sprite) Anchor() Vec2 {
 // (0, 0) will rotate around the top left
 // (0.5, 0.5) will rotate around the center
 // (1, 1) will rotate around the bottom right
-func (s *Sprite) SetAnchor(anchor Vec2) {
+func (s *Sprite) SetAnchor(anchor mathf.Vec2) {
 	if s.anchor == anchor {
 		return
 	}
@@ -108,7 +97,7 @@ func (s *Sprite) createGeoM() ebiten.GeoM {
 		geom.Scale(s.width/imageWidth, s.height/imageHeight)
 	}
 
-	if s.anchor != Vec2Zero {
+	if s.anchor != mathf.Vec2Zero {
 		geom.Translate(
 			-s.width*s.anchor.X,
 			-s.height*s.anchor.Y,
@@ -127,14 +116,14 @@ func (s *Sprite) createGeoM() ebiten.GeoM {
 // Draw will render the sprite onto the canvas.
 // If our transform, sprite or camera are dirty then we will update internal
 // values accordingly.
-func (s *Sprite) Draw(canvas Canvaser, camera Camera) {
+func (s *Sprite) Draw(dest *ebiten.Image, camera Camera) {
 	transformDirty := s.Transform.IsDirty()
 	if transformDirty || s.IsDirty() {
 		s.geom = s.createGeoM()
 	}
 
 	if transformDirty || s.IsDirty() || camera.IsDirty() {
-		anchorOffset := s.anchor.Mul(Vec2{X: s.width, Y: s.height})
+		anchorOffset := s.anchor.Mul(mathf.Vec2{X: s.width, Y: s.height})
 		topLeft := s.Transform.Position().Sub(anchorOffset)
 		s.inView = camera.IsInView(topLeft, s.width, s.height)
 
@@ -147,33 +136,89 @@ func (s *Sprite) Draw(canvas Canvaser, camera Camera) {
 	}
 
 	if s.inView {
-		canvas.DrawImage(s.Image, s.options)
+		dest.DrawImage(s.Image, s.options)
 	}
 
 	s.Clean()
 }
 
-// NewSprite will create a basic sprite from image and transform.
-// Anchor defaults to (0,0) and size will default to the image size.
-func NewSprite(options SpriteOptions) *Sprite {
-	w, h := options.Image.Size()
+// SpriteOption allows setting the starting options for a sprite.
+// You can also just set the values yourself after using the proper
+// set methods.
+type SpriteOption func(s *Sprite)
 
-	if options.Width <= 0 {
-		options.Width = float64(w)
+func SpriteAtPosition(position mathf.Vec2) SpriteOption {
+	return func(s *Sprite) {
+		s.Transform.SetPosition(position)
 	}
+}
 
-	if options.Height <= 0 {
-		options.Height = float64(h)
+func SpriteAtXY(x, y float64) SpriteOption {
+	return func(s *Sprite) {
+		s.Transform.SetPosition(mathf.Vec2{X: x, Y: y})
 	}
+}
 
-	return &Sprite{
-		Image:     options.Image,
-		Transform: options.Transform,
-		anchor:    options.Anchor,
-		width:     options.Width,
-		height:    options.Height,
-		isDirty:   true, // start dirty
+func SpriteWithRotation(rotation float64) SpriteOption {
+	return func(s *Sprite) {
+		s.Transform.SetRotation(rotation)
+	}
+}
+
+func SpriteWithWidth(width float64) SpriteOption {
+	return func(s *Sprite) {
+		s.width = width
+	}
+}
+
+func SpriteWithHeight(height float64) SpriteOption {
+	return func(s *Sprite) {
+		s.height = height
+	}
+}
+
+func SpriteWithSize(width, height float64) SpriteOption {
+	return func(s *Sprite) {
+		s.width = width
+		s.height = height
+	}
+}
+
+func SpriteScaled(factor float64) SpriteOption {
+	return func(s *Sprite) {
+		s.width *= factor
+		s.height *= factor
+	}
+}
+
+func SpriteWithAnchor(anchor mathf.Vec2) SpriteOption {
+	return func(s *Sprite) {
+		s.anchor = anchor
+	}
+}
+
+// NewSprite will create a sprite from image.
+// Defaults include:
+// * Width and height of the image
+// * Positon at 0,0
+// * Rotation of 0
+// * Anchor in the middle center
+func NewSprite(image *ebiten.Image, options ...SpriteOption) *Sprite {
+	w, h := image.Size()
+	sprite := &Sprite{
+		Image:     image,
+		Transform: mathf.NewTransform(),
+		width:     float64(w),
+		height:    float64(h),
+		anchor:    mathf.AnchorMiddleCenter,
+		isDirty:   true,
 		inView:    false,
 		geom:      ebiten.GeoM{},
 	}
+
+	for _, o := range options {
+		o(sprite)
+	}
+
+	return sprite
 }

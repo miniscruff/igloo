@@ -1,4 +1,4 @@
-package igloo
+package graphics
 
 import (
 	"image"
@@ -6,24 +6,17 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
+	"github.com/miniscruff/igloo/mathf"
 	"golang.org/x/image/font"
 )
 
-type LabelOptions struct {
-	Font      font.Face
-	Transform *Transform
-	Color     color.Color
-	Text      string
-	Anchor    Vec2
-}
-
 type Label struct {
-	Transform *Transform
+	Transform *mathf.Transform
 	Color     color.Color
 	// dirty flagging vars
 	font     font.Face
 	text     string
-	anchor   Vec2
+	anchor   mathf.Vec2
 	position image.Point
 	// cache our width and height from bounds
 	width  float64
@@ -91,11 +84,11 @@ func (l *Label) Position() image.Point {
 	return l.position
 }
 
-func (l *Label) Anchor() Vec2 {
+func (l *Label) Anchor() mathf.Vec2 {
 	return l.anchor
 }
 
-func (l *Label) SetAnchor(newAnchor Vec2) {
+func (l *Label) SetAnchor(newAnchor mathf.Vec2) {
 	if l.anchor != newAnchor {
 		l.anchor = newAnchor
 		l.locationDirty = true
@@ -133,21 +126,54 @@ func (l *Label) Draw(dest *ebiten.Image) {
 	text.Draw(dest, l.text, l.font, l.X(), l.Y(), l.Color)
 }
 
-func NewLabel(options LabelOptions) (*Label, error) {
-	l := &Label{
-		Transform:     options.Transform,
-		Color:         options.Color,
-		font:          options.Font,
-		text:          options.Text,
-		anchor:        options.Anchor,
+type LabelOption func(l *Label)
+
+func LabelAtPosition(position mathf.Vec2) LabelOption {
+	return func(l *Label) {
+		l.Transform.SetPosition(position)
+	}
+}
+
+func LabelAtXY(x, y float64) LabelOption {
+	return func(l *Label) {
+		l.Transform.SetPosition(mathf.Vec2{X: x, Y: y})
+	}
+}
+
+func LabelWithAnchor(anchor mathf.Vec2) LabelOption {
+	return func(l *Label) {
+		l.anchor = anchor
+	}
+}
+
+func LabelWithText(text string) LabelOption {
+	return func(l *Label) {
+		l.text = text
+	}
+}
+
+func LabelWithColor(color color.Color) LabelOption {
+	return func(l *Label) {
+		l.Color = color
+	}
+}
+
+func NewLabel(font font.Face, options ...LabelOption) *Label {
+	label := &Label{
+		font:          font,
+		Transform:     mathf.NewTransform(),
+		text:          "",
+		anchor:        mathf.AnchorMiddleCenter,
 		width:         0,
 		height:        0,
 		textDirty:     true,
 		locationDirty: true,
 		inView:        false,
 	}
-	l.cacheText()
-	l.cachePosition()
 
-	return l, nil
+	for _, o := range options {
+		o(label)
+	}
+
+	return label
 }

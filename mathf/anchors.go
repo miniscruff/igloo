@@ -1,4 +1,4 @@
-package igloo
+package mathf
 
 // 9 standard anchors
 var (

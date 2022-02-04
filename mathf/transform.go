@@ -1,4 +1,4 @@
-package igloo
+package mathf
 
 // Transform holds all data associated to a location
 type Transform struct {
@@ -92,9 +92,27 @@ func (t *Transform) TranslateY(y float64) {
 	t.isDirty = true
 }
 
-// NewTransform will create a new transform from x,y and rotation.
+// NewTransform will create a new transform at 0,0 and with no rotation.
 // Note that transforms start dirty.
-func NewTransform(position Vec2, rotation float64) *Transform {
+func NewTransform() *Transform {
+	return NewTransformAtAndRotated(Vec2Zero, 0)
+}
+
+// NewTransformAt will create a new transform from a position with no rotation.
+// Note that transforms start dirty.
+func NewTransformAt(position Vec2) *Transform {
+	return NewTransformAtAndRotated(position, 0)
+}
+
+// NewTransformRotated will create a new transform at 0,0 with a rotation.
+// Note that transforms start dirty.
+func NewTransformRotated(rotation float64) *Transform {
+	return NewTransformAtAndRotated(Vec2Zero, rotation)
+}
+
+// NewTransformAtAndRotated will create a new transform from x,y and rotation.
+// Note that transforms start dirty.
+func NewTransformAtAndRotated(position Vec2, rotation float64) *Transform {
 	return &Transform{
 		position: position,
 		rotation: rotation,
