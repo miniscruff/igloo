@@ -1,4 +1,4 @@
-package igloo
+package content
 
 import (
 	"fmt"

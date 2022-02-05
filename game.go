@@ -50,6 +50,11 @@ type Game struct {
 	scenes []Scene
 }
 
+// Todo: we will want to set and update stuff on this func...
+func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
+	return 800, 600
+}
+
 // Update the top scene of the stack
 func (g *Game) Update() error {
 	lastScene := g.scenes[len(g.scenes)-1]
