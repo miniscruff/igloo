@@ -2,7 +2,9 @@ package igloo
 
 import (
 	"errors"
+	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/miniscruff/igloo/mathf"
 )
 
 // Dirtier allows structs to track when they are changed and only apply
@@ -26,7 +28,7 @@ type Scene interface {
 
 // Updater is the default updating method
 type Updater interface {
-	Update()
+	Update(*mathf.GameTime)
 }
 
 // Disposer lets content be disposed of properly
@@ -41,13 +43,16 @@ var (
 )
 
 func init() {
-	game = &Game{}
+	game = &Game{
+		gameTime: mathf.NewGameTime(),
+	}
 	exit = false
 }
 
 type Game struct {
 	ebiten.Game
-	scenes []Scene
+	gameTime *mathf.GameTime
+	scenes   []Scene
 }
 
 // Todo: we will want to set and update stuff on this func...
@@ -57,12 +62,21 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 
 // Update the top scene of the stack
 func (g *Game) Update() error {
+	g.gameTime.Tick()
+
+	// do not update if our game is running slowly
+	if g.gameTime.IsSlow() {
+		fmt.Printf("game is running slowly: %v\n", g.gameTime.DeltaTime())
+		return nil
+	}
+
 	lastScene := g.scenes[len(g.scenes)-1]
-	lastScene.Update()
+	lastScene.Update(g.gameTime)
 
 	if exit {
 		return exitError
 	}
+
 	return nil
 }
 
