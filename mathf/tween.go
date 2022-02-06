@@ -1,46 +1,19 @@
 package mathf
 
-type TweenOption func(t *Tween)
+type TweenCompleteFunc func(tween *Tween)
+type TweenValueFunc func(value float64)
 
-func TweenWithEase(easeFunc EaseFunc) TweenOption {
-	return func(t *Tween) {
-		t.easeFunc = easeFunc
-	}
-}
-
-func TweenUpdatePointer(value *float64) TweenOption {
-	return func(t *Tween) {
-		t.valueFunc = func(newValue float64) {
-			*value = newValue
-		}
-	}
-}
-
-func TweenUpdateFunc(fn ValueFunc) TweenOption {
-	return func(t *Tween) {
-		t.valueFunc = fn
-	}
-}
-
-func TweenWithRepeat(mode RepeatMode) TweenOption {
-	return func(t *Tween) {
-		t.repeat = mode
-	}
-}
-
-type ValueFunc func(value float64)
-
-type RepeatMode string
+type TweenRepeatMode string
 
 const (
 	// Does not repeat, will trigger complete and be removed from ticker
-	NoRepeat RepeatMode = "NoRepeat"
+	TweenNoRepeat TweenRepeatMode = "NoRepeat"
 	// Repeats the tween from the start over and over again
-	RepeatLoop RepeatMode = "Loop"
+	TweenRepeatLoop TweenRepeatMode = "Loop"
 	// Bounces the tween going from 0>1>0, reversing the ease to get a good bounce
-	RepeatBounce RepeatMode = "Bounce"
+	TweenRepeatBounce TweenRepeatMode = "Bounce"
 	// Pauses the tween at the end ready to start again
-	RepeatPause RepeatMode = "Pause"
+	TweenRepeatPause TweenRepeatMode = "Pause"
 )
 
 type Tween struct {
@@ -49,8 +22,9 @@ type Tween struct {
 	isPaused   bool
 	isComplete bool
 	easeFunc   EaseFunc
-	valueFunc  ValueFunc
-	repeat     RepeatMode
+	valueFunc  TweenValueFunc
+	repeat     TweenRepeatMode
+	completed  TweenCompleteFunc
 	isBouncing bool
 }
 
@@ -61,7 +35,8 @@ func NewTween(duration float64, options ...TweenOption) *Tween {
 		isPaused:   false,
 		easeFunc:   EaseLinear,
 		valueFunc:  func(value float64) {},
-		repeat:     NoRepeat,
+		completed:  func(t *Tween) {},
+		repeat:     TweenNoRepeat,
 		isBouncing: false,
 	}
 
@@ -95,16 +70,18 @@ func (t *Tween) Tick(gameTime *GameTime) {
 
 		// handle completion based on repeat mode
 		switch t.repeat {
-		case NoRepeat:
+		case TweenNoRepeat:
 			t.isComplete = true
-		case RepeatLoop:
+		case TweenRepeatLoop:
 			t.percent = 0
-		case RepeatBounce:
+		case TweenRepeatBounce:
 			t.isBouncing = !t.isBouncing
 			t.percent = 0
-		case RepeatPause:
+		case TweenRepeatPause:
 			t.isPaused = true
 		}
+
+		t.completed(t)
 	}
 
 	easedPercent := t.easeFunc(t.percent)
@@ -115,14 +92,48 @@ func (t *Tween) Tick(gameTime *GameTime) {
 	t.valueFunc(easedPercent)
 }
 
-func TweenVec2Func(start, end Vec2, fn func(Vec2)) ValueFunc {
+func TweenVec2Func(start, end Vec2, fn func(Vec2)) TweenValueFunc {
 	return func(value float64) {
 		fn(Vec2Lerp(start, end, value))
 	}
 }
 
-func TweenVec2Pointer(start, end Vec2, ptr *Vec2) ValueFunc {
+func TweenVec2Pointer(start, end Vec2, ptr *Vec2) TweenValueFunc {
 	return func(value float64) {
 		*ptr = Vec2Lerp(start, end, value)
+	}
+}
+
+type TweenOption func(t *Tween)
+
+func TweenWithEase(easeFunc EaseFunc) TweenOption {
+	return func(t *Tween) {
+		t.easeFunc = easeFunc
+	}
+}
+
+func TweenUpdatePointer(value *float64) TweenOption {
+	return func(t *Tween) {
+		t.valueFunc = func(newValue float64) {
+			*value = newValue
+		}
+	}
+}
+
+func TweenUpdateFunc(fn TweenValueFunc) TweenOption {
+	return func(t *Tween) {
+		t.valueFunc = fn
+	}
+}
+
+func TweenWithRepeat(mode TweenRepeatMode) TweenOption {
+	return func(t *Tween) {
+		t.repeat = mode
+	}
+}
+
+func TweenOnComplete(fn TweenCompleteFunc) TweenOption {
+	return func(t *Tween) {
+		t.completed = fn
 	}
 }
