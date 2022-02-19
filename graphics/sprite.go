@@ -86,6 +86,17 @@ func (s *Sprite) Size() (float64, float64) {
 	return s.width, s.height
 }
 
+func (s *Sprite) Bounds() mathf.Bounds {
+	anchorOffset := s.anchor.Mul(mathf.Vec2{X: s.width, Y: s.height})
+	topLeft := s.Transform.Position().Sub(anchorOffset)
+	return mathf.NewBoundsWidthHeight(
+		topLeft.X,
+		topLeft.Y,
+		s.width,
+		s.height,
+	)
+}
+
 func (s *Sprite) createGeoM() ebiten.GeoM {
 	geom := ebiten.GeoM{}
 

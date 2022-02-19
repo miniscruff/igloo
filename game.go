@@ -44,20 +44,49 @@ var (
 
 func init() {
 	game = &Game{
-		gameTime: mathf.NewGameTime(),
+		gameTime:     mathf.NewGameTime(),
+		screenWidth:  800,
+		screenHeight: 600,
 	}
 	exit = false
 }
 
 type Game struct {
 	ebiten.Game
-	gameTime *mathf.GameTime
-	scenes   []Scene
+	gameTime      *mathf.GameTime
+	scenes        []Scene
+	outsideWidth  int
+	outsideHeight int
+	screenWidth   int
+	screenHeight  int
 }
 
 // Todo: we will want to set and update stuff on this func...
 func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
-	return 800, 600
+	g.outsideWidth = outsideWidth
+	g.outsideHeight = outsideHeight
+	return g.screenWidth, g.screenHeight
+}
+
+func GetOutsideSize() (int, int) {
+	return game.outsideWidth, game.outsideHeight
+}
+
+func GetWindowSize() (int, int) {
+	return game.screenWidth, game.screenHeight
+}
+
+func Width() int {
+	return game.screenWidth
+}
+
+func Height() int {
+	return game.screenHeight
+}
+
+func SetWindowSize(w, h int) {
+	game.screenWidth = w
+	game.screenHeight = h
 }
 
 // Update the top scene of the stack
