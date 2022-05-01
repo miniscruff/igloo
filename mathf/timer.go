@@ -1,7 +1,5 @@
 package mathf
 
-import "time"
-
 type TimerCompleteFunc func()
 
 type TimerRepeatMode string
@@ -12,7 +10,7 @@ const (
 )
 
 type Timer struct {
-	startTime    time.Time
+	timer        float64
 	duration     float64
 	isPaused     bool
 	isComplete   bool
@@ -22,7 +20,7 @@ type Timer struct {
 
 func NewTimer(duration float64, options ...TimerOption) *Timer {
 	t := &Timer{
-		startTime:    time.Now(),
+		timer:        0,
 		duration:     duration,
 		isPaused:     false,
 		isComplete:   false,
@@ -33,15 +31,22 @@ func NewTimer(duration float64, options ...TimerOption) *Timer {
 		o(t)
 	}
 
+	// set the start time here with an option to customize time.Now
+
 	return t
 }
 
-func (t *Timer) Resume() {
-	t.isPaused = false
+func (t *Timer) Start() {
+	t.Resume()
+	t.timer = 0
 }
 
 func (t *Timer) Pause() {
 	t.isPaused = true
+}
+
+func (t *Timer) Resume() {
+	t.isPaused = false
 }
 
 func (t *Timer) IsPaused() bool {
@@ -53,10 +58,11 @@ func (t *Timer) IsComplete() bool {
 }
 
 func (t *Timer) Tick(gameTime *GameTime) {
-	if time.Since(t.startTime).Seconds() >= t.duration {
+	t.timer += gameTime.DeltaTime()
+	if t.timer >= t.duration {
 		t.completeFunc()
 		if t.repeat == TimerRepeats {
-			t.startTime = time.Now()
+			t.timer = 0
 		} else {
 			t.isComplete = true
 		}

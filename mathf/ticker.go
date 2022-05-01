@@ -1,9 +1,12 @@
 package mathf
 
 type TickerImp interface {
-	Tick(gameTime *GameTime)
-	IsPaused() bool
-	IsComplete() bool
+	Start() // first run, should reset to starting state
+	Pause() // stops ticking but keeps state
+	Resume() // resumes ticking
+	IsPaused() bool // if we are paused
+	IsComplete() bool // if we are complete
+	Tick(gameTime *GameTime) // update our listeners
 }
 
 type Ticker struct {
@@ -16,6 +19,7 @@ func NewTicker() *Ticker {
 
 func (t *Ticker) Add(imp TickerImp) {
 	t.tickers = append(t.tickers, imp)
+	imp.Start()
 }
 
 // todo Remove(imp TickerImp)

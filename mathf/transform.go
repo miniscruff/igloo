@@ -119,3 +119,66 @@ func NewTransformAtAndRotated(position Vec2, rotation float64) *Transform {
 		isDirty:  true, // start dirty
 	}
 }
+
+// Transform tweens
+
+func NewRotationClip(
+	target *Transform,
+	start, end, duration float64,
+	useRelative bool,
+	options ...TweenOption,
+) *Tween {
+	startRotation := start
+	endRotation := end
+
+	t := NewTween(
+		duration,
+		TweenUpdateFunc(func(value float64) {
+			target.SetRotation(Lerp(startRotation, endRotation, value))
+		}),
+	)
+
+	if useRelative {
+		TweenOnStart(func(t *Tween) {
+			startRotation = target.Rotation() + start
+			endRotation = target.Rotation() + end
+		})(t)
+	}
+
+	for _, opt := range options {
+		opt(t)
+	}
+
+	return t
+}
+
+func NewPositionClip(
+	target *Transform,
+	start, end Vec2,
+	duration float64,
+	useRelative bool,
+	options ...TweenOption,
+) *Tween {
+	startPosition := start
+	endPosition := end
+
+	t := NewTween(
+		duration,
+		TweenUpdateFunc(func(value float64) {
+			target.SetPosition(Vec2Lerp(startPosition, endPosition, value))
+		}),
+	)
+
+	if useRelative {
+		TweenOnStart(func(t *Tween) {
+			startPosition = target.Position().Add(start)
+			endPosition = target.Position().Add(end)
+		})(t)
+	}
+
+	for _, opt := range options {
+		opt(t)
+	}
+
+	return t
+}

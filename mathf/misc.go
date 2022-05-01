@@ -63,21 +63,6 @@ func Clamp(value, min, max float64) float64 {
 	return value
 }
 
-/*
-static public float MoveTowardsAngle(float current, float target, float maxDelta)
-{
-	float deltaAngle = DeltaAngle(current, target);
-	if (-maxDelta < deltaAngle && deltaAngle < maxDelta)
-		return target;
-	target = current + deltaAngle;
-	return MoveTowards(current, target, maxDelta);
+func Lerp(start, end, percent float64) float64 {
+	return start+(end-start)*percent
 }
-
-static public float MoveTowards(float current, float target, float maxDelta)
-{
-	if (Mathf.Abs(target - current) <= maxDelta)
-		return target;
-	return current + Mathf.Sign(target - current) * maxDelta;
-}
-
-*/

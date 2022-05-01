@@ -1,6 +1,8 @@
 package graphics
 
 import (
+	"image"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/miniscruff/igloo/mathf"
 )
@@ -232,4 +234,55 @@ func NewSprite(image *ebiten.Image, options ...SpriteOption) *Sprite {
 	}
 
 	return sprite
+}
+
+// SpriteSheet represents a collection of images
+type SpriteSheet []*ebiten.Image
+
+func (ss *SpriteSheet) FrameAt(percent float64) *ebiten.Image {
+	count := float64(len(*ss))
+	return (*ss)[int(mathf.Lerp(0, count-1, percent))]
+}
+
+func SheetFromGrid(sheet *ebiten.Image, columns, rows, frames int) *SpriteSheet {
+	w, h := sheet.Size()
+	fw := w/columns
+	fh := h/rows
+
+	var images SpriteSheet = make([]*ebiten.Image, frames)
+	for y := 0; y < rows; y++ {
+		for x := 0; x < columns; x++ {
+			i := y*rows+x
+			images[i] = sheet.SubImage(
+				image.Rect(x*fw, y*fw, (x+1)*fw, (y+1)*fh),
+			).(*ebiten.Image)
+
+			if i == frames - 1 {
+				goto done
+			}
+		}
+	}
+
+	done:
+	return &images
+}
+
+func NewFrameClip(
+	target *Sprite,
+	sheet *SpriteSheet,
+	duration float64,
+	options ...mathf.TweenOption,
+) *mathf.Tween {
+	t := mathf.NewTween(
+		duration,
+		mathf.TweenUpdateFunc(func(value float64) {
+			target.Image = sheet.FrameAt(value)
+		}),
+	)
+
+	for _, opt := range options {
+		opt(t)
+	}
+
+	return t
 }

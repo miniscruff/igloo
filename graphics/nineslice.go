@@ -6,7 +6,7 @@ import (
 	"image"
 )
 
-// NineSlice represents a renderable element in the world.
+// NineSlice represents a renderable slicable element in the world.
 type NineSlice struct {
 	Image     *ebiten.Image
 	Transform *mathf.Transform

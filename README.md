@@ -80,3 +80,18 @@ func (s *ExampleScene) Draw(dest *ebiten.Image) {
     * sprite
     * nine-slice
     * label
+
+## Notes
+### Animations
+1. Repeat animations, not repeat, ping-pong
+1. Translate a little bit
+1. Transition from one animation to another, based on some condition
+1. Rotation
+1. Easing
+1. Number of frames
+1. Thing with multiple animations [sprites, translates, rotates, scales, etc]
+1. Total amount of time for the animation
+1. Alter some animation based on game values
+
+### Particles
+1. TBD

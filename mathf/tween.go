@@ -1,6 +1,6 @@
 package mathf
 
-type TweenCompleteFunc func(tween *Tween)
+type TweenStatusChangedFunc func(tween *Tween)
 type TweenValueFunc func(value float64)
 
 type TweenRepeatMode string
@@ -24,7 +24,8 @@ type Tween struct {
 	easeFunc   EaseFunc
 	valueFunc  TweenValueFunc
 	repeat     TweenRepeatMode
-	completed  TweenCompleteFunc
+	started    TweenStatusChangedFunc
+	completed  TweenStatusChangedFunc
 	isBouncing bool
 }
 
@@ -35,6 +36,7 @@ func NewTween(duration float64, options ...TweenOption) *Tween {
 		isPaused:   false,
 		easeFunc:   EaseLinear,
 		valueFunc:  func(value float64) {},
+		started:    func(t *Tween) {},
 		completed:  func(t *Tween) {},
 		repeat:     TweenNoRepeat,
 		isBouncing: false,
@@ -48,11 +50,17 @@ func NewTween(duration float64, options ...TweenOption) *Tween {
 }
 
 func (t *Tween) Start() {
-	t.isPaused = false
+	t.Resume()
+	t.percent = 0
+	t.started(t)
 }
 
 func (t *Tween) Pause() {
 	t.isPaused = true
+}
+
+func (t *Tween) Resume() {
+	t.isPaused = false
 }
 
 func (t *Tween) IsPaused() bool {
@@ -65,6 +73,7 @@ func (t *Tween) IsComplete() bool {
 
 func (t *Tween) Tick(gameTime *GameTime) {
 	t.percent += gameTime.DeltaTime() / t.duration
+
 	if t.percent >= 1 {
 		t.percent = 1
 
@@ -132,7 +141,13 @@ func TweenWithRepeat(mode TweenRepeatMode) TweenOption {
 	}
 }
 
-func TweenOnComplete(fn TweenCompleteFunc) TweenOption {
+func TweenOnStart(fn TweenStatusChangedFunc) TweenOption {
+	return func(t *Tween) {
+		t.started = fn
+	}
+}
+
+func TweenOnComplete(fn TweenStatusChangedFunc) TweenOption {
 	return func(t *Tween) {
 		t.completed = fn
 	}

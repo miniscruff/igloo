@@ -2,7 +2,6 @@ package igloo
 
 import (
 	"errors"
-	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/miniscruff/igloo/mathf"
 )
@@ -91,14 +90,6 @@ func SetWindowSize(w, h int) {
 
 // Update the top scene of the stack
 func (g *Game) Update() error {
-	g.gameTime.Tick()
-
-	// do not update if our game is running slowly
-	if g.gameTime.IsSlow() {
-		fmt.Printf("game is running slowly: %v\n", g.gameTime.DeltaTime())
-		return nil
-	}
-
 	lastScene := g.scenes[len(g.scenes)-1]
 	lastScene.Update(g.gameTime)
 
