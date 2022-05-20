@@ -58,9 +58,10 @@ type Game struct {
 	outsideHeight int
 	screenWidth   int
 	screenHeight  int
+	windowWidth   int
+	windowHeight  int
 }
 
-// Todo: we will want to set and update stuff on this func...
 func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 	g.outsideWidth = outsideWidth
 	g.outsideHeight = outsideHeight
@@ -72,6 +73,10 @@ func GetOutsideSize() (int, int) {
 }
 
 func GetWindowSize() (int, int) {
+	return game.windowWidth, game.windowHeight
+}
+
+func GetScreenSize() (int, int) {
 	return game.screenWidth, game.screenHeight
 }
 
@@ -83,9 +88,15 @@ func Height() int {
 	return game.screenHeight
 }
 
-func SetWindowSize(w, h int) {
+func SetScreenSize(w, h int) {
 	game.screenWidth = w
 	game.screenHeight = h
+}
+
+func SetWindowSize(w, h int) {
+	game.windowWidth = w
+	game.windowHeight = h
+	ebiten.SetWindowSize(w, h)
 }
 
 // Update the top scene of the stack
