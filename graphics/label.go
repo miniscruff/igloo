@@ -6,8 +6,9 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
-	"github.com/miniscruff/igloo/mathf"
 	"golang.org/x/image/font"
+
+	"github.com/miniscruff/igloo/mathf"
 )
 
 type Label struct {

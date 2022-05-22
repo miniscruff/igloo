@@ -12,7 +12,7 @@ type GameTime struct {
 func NewGameTime() *GameTime {
 	return &GameTime{
 		startTime: time.Now(),
-		deltaTime: 1.0/60.0,
+		deltaTime: 1.0 / 60.0,
 	}
 }
 

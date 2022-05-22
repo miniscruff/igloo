@@ -16,6 +16,7 @@ func RotateTowards(current, target, maxDelta float64) float64 {
 	}
 
 	target = current + deltaAngle
+
 	return BindAngle(MoveTowards(current, target, maxDelta))
 }
 
@@ -36,7 +37,7 @@ func Sign(value float64) float64 {
 }
 
 func DeltaAngle(current, target float64) float64 {
-	return BindAngle(target-current)
+	return BindAngle(target - current)
 }
 
 func BindAngle(angle float64) float64 {
@@ -44,6 +45,7 @@ func BindAngle(angle float64) float64 {
 	if bound > math.Pi {
 		bound -= twoPi
 	}
+
 	return bound
 }
 
@@ -64,5 +66,5 @@ func Clamp(value, min, max float64) float64 {
 }
 
 func Lerp(start, end, percent float64) float64 {
-	return start+(end-start)*percent
+	return start + (end-start)*percent
 }

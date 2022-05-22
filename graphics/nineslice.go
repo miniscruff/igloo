@@ -1,9 +1,11 @@
 package graphics
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/miniscruff/igloo/mathf"
 	"image"
+
+	"github.com/hajimehoshi/ebiten/v2"
+
+	"github.com/miniscruff/igloo/mathf"
 )
 
 // NineSlice represents a renderable slicable element in the world.
@@ -247,6 +249,7 @@ func SubImageWidthHeight(img *ebiten.Image, x, y, width, height int) *ebiten.Ima
 	sx := img.Bounds().Min.X
 	sy := img.Bounds().Min.Y
 	rect := image.Rect(sx+x, sy+y, sx+x+width, sy+y+height)
+
 	return img.SubImage(rect).(*ebiten.Image)
 }
 
@@ -316,7 +319,7 @@ func (b *SliceBorders) BottomRightSprite(img *ebiten.Image) *Sprite {
 // NewNineSlice will create a nine slice from an image and border values
 // Defaults include:
 // * Width and height of the image
-// * Positon at 0,0
+// * Position at 0,0
 // * Rotation of 0
 // * Anchor in the middle center
 func NewNineSlice(img *ebiten.Image, borders SliceBorders, options ...NineSliceOption) *NineSlice {

@@ -1,10 +1,12 @@
 package graphics
 
 import (
+	"image"
+
 	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/miniscruff/igloo"
 	"github.com/miniscruff/igloo/mathf"
-	"image"
 )
 
 // Camera allows you to move through a large scene without having to modify each

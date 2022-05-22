@@ -61,6 +61,7 @@ func (t *Timer) Tick(gameTime *GameTime) {
 	t.timer += gameTime.DeltaTime()
 	if t.timer >= t.duration {
 		t.completeFunc()
+
 		if t.repeat == TimerRepeats {
 			t.timer = 0
 		} else {

@@ -1,11 +1,11 @@
 package mathf
 
 type TickerImp interface {
-	Start() // first run, should reset to starting state
-	Pause() // stops ticking but keeps state
-	Resume() // resumes ticking
-	IsPaused() bool // if we are paused
-	IsComplete() bool // if we are complete
+	Start()                  // first run, should reset to starting state
+	Pause()                  // stops ticking but keeps state
+	Resume()                 // resumes ticking
+	IsPaused() bool          // if we are paused
+	IsComplete() bool        // if we are complete
 	Tick(gameTime *GameTime) // update our listeners
 }
 
@@ -22,14 +22,14 @@ func (t *Ticker) Add(imp TickerImp) {
 	imp.Start()
 }
 
-// todo Remove(imp TickerImp)
-
 func (t *Ticker) Tick(gameTime *GameTime) {
 	var toRemove []TickerImp
+
 	for _, imp := range t.tickers {
 		if !imp.IsPaused() {
 			imp.Tick(gameTime)
 		}
+
 		if imp.IsComplete() {
 			toRemove = append(toRemove, imp)
 		}
@@ -43,6 +43,7 @@ func (t *Ticker) Tick(gameTime *GameTime) {
 					end := len(t.tickers) - 1
 					t.tickers[i] = t.tickers[end]
 					t.tickers = t.tickers[:end]
+
 					break
 				}
 			}
