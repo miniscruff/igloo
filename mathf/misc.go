@@ -16,6 +16,7 @@ func RotateTowards(current, target, maxDelta float64) float64 {
 	}
 
 	target = current + deltaAngle
+
 	return BindAngle(MoveTowards(current, target, maxDelta))
 }
 
@@ -44,6 +45,7 @@ func BindAngle(angle float64) float64 {
 	if bound > math.Pi {
 		bound -= twoPi
 	}
+
 	return bound
 }
 

@@ -22,14 +22,14 @@ func (t *Ticker) Add(imp TickerImp) {
 	imp.Start()
 }
 
-// todo Remove(imp TickerImp)
-
 func (t *Ticker) Tick(gameTime *GameTime) {
 	var toRemove []TickerImp
+
 	for _, imp := range t.tickers {
 		if !imp.IsPaused() {
 			imp.Tick(gameTime)
 		}
+
 		if imp.IsComplete() {
 			toRemove = append(toRemove, imp)
 		}
@@ -43,6 +43,7 @@ func (t *Ticker) Tick(gameTime *GameTime) {
 					end := len(t.tickers) - 1
 					t.tickers[i] = t.tickers[end]
 					t.tickers = t.tickers[:end]
+
 					break
 				}
 			}

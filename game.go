@@ -38,19 +38,10 @@ type Disposer interface {
 }
 
 var (
-	game      *Game
-	exit      bool
-	exitError = errors.New("exiting game")
+	game    *Game
+	exit    bool
+	errExit = errors.New("exiting game")
 )
-
-func init() {
-	game = &Game{
-		gameTime:     mathf.NewGameTime(),
-		screenWidth:  800,
-		screenHeight: 600,
-	}
-	exit = false
-}
 
 type Game struct {
 	gameTime      *mathf.GameTime
@@ -66,6 +57,7 @@ type Game struct {
 func (g *Game) Layout(outsideWidth int, outsideHeight int) (int, int) {
 	g.outsideWidth = outsideWidth
 	g.outsideHeight = outsideHeight
+
 	return g.screenWidth, g.screenHeight
 }
 
@@ -106,7 +98,7 @@ func (g *Game) Update() error {
 	lastScene.Update(g.gameTime)
 
 	if exit {
-		return exitError
+		return errExit
 	}
 
 	return nil
@@ -135,6 +127,15 @@ func Pop() {
 // Exit the game at the end of the next update
 func Exit() {
 	exit = true
+}
+
+func InitGame() {
+	game = &Game{
+		gameTime:     mathf.NewGameTime(),
+		screenWidth:  800,
+		screenHeight: 600,
+	}
+	exit = false
 }
 
 func Run() error {

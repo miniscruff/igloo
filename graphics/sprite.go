@@ -92,6 +92,7 @@ func (s *Sprite) Size() (float64, float64) {
 func (s *Sprite) Bounds() mathf.Bounds {
 	anchorOffset := s.anchor.Mul(mathf.Vec2{X: s.width, Y: s.height})
 	topLeft := s.Transform.Position().Sub(anchorOffset)
+
 	return mathf.NewBoundsWidthHeight(
 		topLeft.X,
 		topLeft.Y,
@@ -214,7 +215,7 @@ func SpriteWithAnchor(anchor mathf.Vec2) SpriteOption {
 // NewSprite will create a sprite from image.
 // Defaults include:
 // * Width and height of the image
-// * Positon at 0,0
+// * Position at 0,0
 // * Rotation of 0
 // * Anchor in the middle center
 func NewSprite(image *ebiten.Image, options ...SpriteOption) *Sprite {
@@ -246,11 +247,12 @@ func (ss *SpriteSheet) FrameAt(percent float64) *ebiten.Image {
 }
 
 func SheetFromGrid(sheet *ebiten.Image, columns, rows, frames int) *SpriteSheet {
+	var images SpriteSheet = make([]*ebiten.Image, frames)
+
 	w, h := sheet.Size()
 	fw := w / columns
 	fh := h / rows
 
-	var images SpriteSheet = make([]*ebiten.Image, frames)
 	for y := 0; y < rows; y++ {
 		for x := 0; x < columns; x++ {
 			i := y*rows + x
