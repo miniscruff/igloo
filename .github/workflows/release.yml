@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ CHANGELOG.md ]
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Changie
+      - uses: supplypike/setup-bin@v1
+        with:
+          url: 'https://github.com/miniscruff/changie/releases/download/v1.7.0/changie_1.7.0_linux_amd64.tar.gz'
+          name: 'changie'
+          version: 'v1.7.0'
+
+    - name: Add env vars
+      run: |
+        echo VERSION=$(changie latest).md >> $GITHUB_ENV
+        echo RELEASE_NOTES_PATH=.changes/$(changie latest).md >> $GITHUB_ENV
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.VERSION }}
+          body_path: ${{ env.RELEASE_NOTES_PATH }}
+        env:
+          GITHUB_REPOSITORY: my_gh_org/my_gh_repo

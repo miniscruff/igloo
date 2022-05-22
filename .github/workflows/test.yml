@@ -15,18 +15,17 @@ on:
 jobs:
   tests:
     name: tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       DISPLAY: ':99.0'
     defaults:
       run:
         shell: bash
     steps:
-    - name: Set up Go 1.18
+    - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: ^1.18
-      id: go
+        go-version: 1.18
 
     - name: Install OS deps
       run: |
