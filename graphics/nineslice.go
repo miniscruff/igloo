@@ -1,9 +1,11 @@
 package graphics
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/miniscruff/igloo/mathf"
 	"image"
+
+	"github.com/hajimehoshi/ebiten/v2"
+
+	"github.com/miniscruff/igloo/mathf"
 )
 
 // NineSlice represents a renderable slicable element in the world.

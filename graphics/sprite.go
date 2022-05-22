@@ -4,6 +4,7 @@ import (
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/miniscruff/igloo/mathf"
 )
 
@@ -246,24 +247,24 @@ func (ss *SpriteSheet) FrameAt(percent float64) *ebiten.Image {
 
 func SheetFromGrid(sheet *ebiten.Image, columns, rows, frames int) *SpriteSheet {
 	w, h := sheet.Size()
-	fw := w/columns
-	fh := h/rows
+	fw := w / columns
+	fh := h / rows
 
 	var images SpriteSheet = make([]*ebiten.Image, frames)
 	for y := 0; y < rows; y++ {
 		for x := 0; x < columns; x++ {
-			i := y*rows+x
+			i := y*rows + x
 			images[i] = sheet.SubImage(
 				image.Rect(x*fw, y*fw, (x+1)*fw, (y+1)*fh),
 			).(*ebiten.Image)
 
-			if i == frames - 1 {
+			if i == frames-1 {
 				goto done
 			}
 		}
 	}
 
-	done:
+done:
 	return &images
 }
 

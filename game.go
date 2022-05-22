@@ -2,7 +2,9 @@ package igloo
 
 import (
 	"errors"
+
 	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/miniscruff/igloo/mathf"
 )
 
@@ -51,7 +53,6 @@ func init() {
 }
 
 type Game struct {
-	ebiten.Game
 	gameTime      *mathf.GameTime
 	scenes        []Scene
 	outsideWidth  int

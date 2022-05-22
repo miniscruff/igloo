@@ -36,7 +36,7 @@ func Sign(value float64) float64 {
 }
 
 func DeltaAngle(current, target float64) float64 {
-	return BindAngle(target-current)
+	return BindAngle(target - current)
 }
 
 func BindAngle(angle float64) float64 {
@@ -64,5 +64,5 @@ func Clamp(value, min, max float64) float64 {
 }
 
 func Lerp(start, end, percent float64) float64 {
-	return start+(end-start)*percent
+	return start + (end-start)*percent
 }

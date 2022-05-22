@@ -1,11 +1,11 @@
 package mathf
 
 type TickerImp interface {
-	Start() // first run, should reset to starting state
-	Pause() // stops ticking but keeps state
-	Resume() // resumes ticking
-	IsPaused() bool // if we are paused
-	IsComplete() bool // if we are complete
+	Start()                  // first run, should reset to starting state
+	Pause()                  // stops ticking but keeps state
+	Resume()                 // resumes ticking
+	IsPaused() bool          // if we are paused
+	IsComplete() bool        // if we are complete
 	Tick(gameTime *GameTime) // update our listeners
 }
 
