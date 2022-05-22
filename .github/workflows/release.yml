@@ -20,7 +20,7 @@ jobs:
 
     - name: Add env vars
       run: |
-        echo VERSION=$(changie latest).md >> $GITHUB_ENV
+        echo VERSION=$(changie latest) >> $GITHUB_ENV
         echo RELEASE_NOTES_PATH=.changes/$(changie latest).md >> $GITHUB_ENV
 
     - name: Release
