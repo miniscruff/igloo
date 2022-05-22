@@ -2,9 +2,15 @@ name: unit test and coverage
 
 on:
   push:
-    branches: [ skip-for-now ]
+    branches: [ main ]
+    paths-ignore:
+    - 'changes/'
+    - 'CHANGELOG.md'
   pull_request:
-    branches: [ skip-for-now ]
+    branches: [ main ]
+    paths-ignore:
+    - 'changes/'
+    - 'CHANGELOG.md'
 
 jobs:
   tests:
