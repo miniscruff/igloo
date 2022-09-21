@@ -1,0 +1,5 @@
+kind: Added
+body: Finite State Machine for transitioning between different string states
+time: 2022-09-21T01:00:26.2141819-07:00
+custom:
+  Issue: "88"

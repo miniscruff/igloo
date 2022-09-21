@@ -143,7 +143,7 @@ func Vec2FromPoint(pt image.Point) Vec2 {
 	return Vec2{X: float64(pt.X), Y: float64(pt.Y)}
 }
 
-// Vec2FromPoint returns a Vec2 from an image point
+// Vec2FromInts returns a Vec2 from an image point
 func Vec2FromInts(x, y int) Vec2 {
 	return Vec2{X: float64(x), Y: float64(y)}
 }

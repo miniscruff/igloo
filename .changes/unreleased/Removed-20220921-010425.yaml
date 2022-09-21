@@ -1,0 +1,5 @@
+kind: Removed
+body: Content package removed and replaced with content manager
+time: 2022-09-21T01:04:25.0417889-07:00
+custom:
+  Issue: "96"

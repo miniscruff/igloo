@@ -1,0 +1,5 @@
+kind: Changed
+body: Cameras in view check uses mathf.Bounds instead of position, width and height
+time: 2022-09-21T01:03:13.9215369-07:00
+custom:
+  Issue: "95"
