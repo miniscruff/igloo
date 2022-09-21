@@ -62,6 +62,7 @@ func (cm *ContentManager) LoadImage(path string) (*ebiten.Image, error) {
 	}
 
 	fullPath := cm.fullPath(path)
+
 	file, err := cm.fsys.Open(fullPath)
 	if err != nil {
 		return nil, err
@@ -76,6 +77,7 @@ func (cm *ContentManager) LoadImage(path string) (*ebiten.Image, error) {
 
 	ebiImage := ebiten.NewImageFromImage(img)
 	cm.images[path] = ebiImage
+
 	return ebiImage, nil
 }
 
@@ -86,6 +88,7 @@ func (cm *ContentManager) LoadOpenType(path string) (*sfnt.Font, error) {
 	}
 
 	fullPath := cm.fullPath(path)
+
 	fontBytes, err := cm.readFSFile(fullPath)
 	if err != nil {
 		return nil, err
@@ -97,18 +100,23 @@ func (cm *ContentManager) LoadOpenType(path string) (*sfnt.Font, error) {
 	}
 
 	cm.fonts[path] = openType
+
 	return openType, nil
 }
 
 // LoadFontFace will load a font face from font and options.
 // Note that no caching is done for this, so only load once  per unique font and options.
-func (cm *ContentManager) LoadFontFace(font *sfnt.Font, options *opentype.FaceOptions) (font.Face, error) {
+func (cm *ContentManager) LoadFontFace(
+	font *sfnt.Font,
+	options *opentype.FaceOptions,
+) (font.Face, error) {
 	face, err := opentype.NewFace(font, options)
 	if err != nil {
 		return nil, fmt.Errorf("loading font face for %v: %w", font, err)
 	}
 
 	cm.faces = append(cm.faces, face)
+
 	return face, nil
 }
 

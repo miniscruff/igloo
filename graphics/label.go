@@ -12,11 +12,11 @@ import (
 
 type Label struct {
 	Transform *mathf.Transform
-	font    font.Face
-	text    string
-	color   color.Color
-	inView  bool
-	options *ebiten.DrawImageOptions
+	font      font.Face
+	text      string
+	color     color.Color
+	inView    bool
+	options   *ebiten.DrawImageOptions
 }
 
 func (l *Label) Text() string {
@@ -78,7 +78,12 @@ func (l *Label) Draw(dest *ebiten.Image, camera Camera) {
 	}
 }
 
-func NewLabel(font font.Face, labelText string, color color.Color, options ...mathf.TransformOption) *Label {
+func NewLabel(
+	font font.Face,
+	labelText string,
+	color color.Color,
+	options ...mathf.TransformOption,
+) *Label {
 	rect := text.BoundString(font, labelText)
 	width := float64(rect.Bounds().Dx())
 	height := float64(rect.Bounds().Dy())

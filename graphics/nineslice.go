@@ -188,7 +188,11 @@ func (b *SliceBorders) BottomRightSprite(img *ebiten.Image) *Sprite {
 // * Position at 0,0
 // * Rotation of 0
 // * Anchor in the middle center
-func NewNineSlice(image *ebiten.Image, borders SliceBorders, options ...mathf.TransformOption) *NineSlice {
+func NewNineSlice(
+	image *ebiten.Image,
+	borders SliceBorders,
+	options ...mathf.TransformOption,
+) *NineSlice {
 	w, h := image.Size()
 	// prepend our natural size option
 	options = append([]mathf.TransformOption{

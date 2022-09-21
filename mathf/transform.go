@@ -223,7 +223,7 @@ func (t *Transform) build() {
 	// handle flipping the y anchor here
 	ay := t.anchor.Y
 	if t.fromBottom {
-		ay = ay - 1
+		ay--
 	}
 
 	t.geom.Translate(-t.width*t.anchor.X, -t.height*ay)

@@ -65,6 +65,7 @@ func (t *Tween) Bounce() {
 	if !t.isPaused && !t.firstStart {
 		t.isBouncing = !t.isBouncing
 	}
+
 	t.Start()
 }
 
