@@ -1,0 +1,5 @@
+kind: Changed
+body: Transform now handles width, height and anchor and associated helper methods
+time: 2022-09-21T01:02:40.7974314-07:00
+custom:
+  Issue: "93"

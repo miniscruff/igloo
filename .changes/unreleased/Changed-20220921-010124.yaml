@@ -1,0 +1,5 @@
+kind: Changed
+body: Tickers now start paused
+time: 2022-09-21T01:01:24.3085281-07:00
+custom:
+  Issue: "94"

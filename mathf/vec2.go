@@ -143,6 +143,11 @@ func Vec2FromPoint(pt image.Point) Vec2 {
 	return Vec2{X: float64(pt.X), Y: float64(pt.Y)}
 }
 
+// Vec2FromInts returns a Vec2 from an image point
+func Vec2FromInts(x, y int) Vec2 {
+	return Vec2{X: float64(x), Y: float64(y)}
+}
+
 // Vec2Lerp returns a Vec2 as a linear interpolation between two vectors
 func Vec2Lerp(start, end Vec2, percent float64) Vec2 {
 	return Vec2{

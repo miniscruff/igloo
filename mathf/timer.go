@@ -22,7 +22,7 @@ func NewTimer(duration float64, options ...TimerOption) *Timer {
 	t := &Timer{
 		timer:        0,
 		duration:     duration,
-		isPaused:     false,
+		isPaused:     true,
 		isComplete:   false,
 		completeFunc: func() {},
 	}
