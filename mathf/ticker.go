@@ -19,7 +19,6 @@ func NewTicker() *Ticker {
 
 func (t *Ticker) Add(imp TickerImp) {
 	t.tickers = append(t.tickers, imp)
-	imp.Start()
 }
 
 func (t *Ticker) Tick(gameTime *GameTime) {

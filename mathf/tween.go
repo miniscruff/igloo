@@ -10,6 +10,8 @@ const (
 	TweenNoRepeat TweenRepeatMode = "NoRepeat"
 	// Repeats the tween from the start over and over again
 	TweenRepeatLoop TweenRepeatMode = "Loop"
+	// Bounces the tween going from 0>1>0 in a loop, reversing the ease to get a good bounce
+	TweenRepeatBounceLoop TweenRepeatMode = "RepeatBounce"
 	// Bounces the tween going from 0>1>0, reversing the ease to get a good bounce
 	TweenRepeatBounce TweenRepeatMode = "Bounce"
 	// Pauses the tween at the end ready to start again
@@ -27,19 +29,21 @@ type Tween struct {
 	started    TweenStatusChangedFunc
 	completed  TweenStatusChangedFunc
 	isBouncing bool
+	firstStart bool
 }
 
 func NewTween(duration float64, options ...TweenOption) *Tween {
 	t := &Tween{
 		duration:   duration,
 		percent:    0,
-		isPaused:   false,
+		isPaused:   true,
 		easeFunc:   EaseLinear,
 		valueFunc:  func(value float64) {},
 		started:    func(t *Tween) {},
 		completed:  func(t *Tween) {},
 		repeat:     TweenNoRepeat,
 		isBouncing: false,
+		firstStart: true,
 	}
 
 	for _, o := range options {
@@ -51,8 +55,17 @@ func NewTween(duration float64, options ...TweenOption) *Tween {
 
 func (t *Tween) Start() {
 	t.Resume()
-	t.percent = 0
 	t.started(t)
+	t.firstStart = false
+}
+
+// Bounce will start the tween bouncing back if the
+// tween was not yet complete
+func (t *Tween) Bounce() {
+	if !t.isPaused && !t.firstStart {
+		t.isBouncing = !t.isBouncing
+	}
+	t.Start()
 }
 
 func (t *Tween) Pause() {
@@ -83,9 +96,13 @@ func (t *Tween) Tick(gameTime *GameTime) {
 			t.isComplete = true
 		case TweenRepeatLoop:
 			t.percent = 0
+		case TweenRepeatBounceLoop:
+			t.isBouncing = !t.isBouncing
+			t.percent = 0
 		case TweenRepeatBounce:
 			t.isBouncing = !t.isBouncing
 			t.percent = 0
+			t.isPaused = true
 		case TweenRepeatPause:
 			t.isPaused = true
 		}
@@ -150,5 +167,11 @@ func TweenOnStart(fn TweenStatusChangedFunc) TweenOption {
 func TweenOnComplete(fn TweenStatusChangedFunc) TweenOption {
 	return func(t *Tween) {
 		t.completed = fn
+	}
+}
+
+func TweenPlay() TweenOption {
+	return func(t *Tween) {
+		t.isPaused = false
 	}
 }

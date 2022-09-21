@@ -30,8 +30,7 @@ type Camera interface {
 	ScreenToWorld(screen image.Point) mathf.Vec2
 
 	// IsInView returns whether or not a rectangle is within the cameras view.
-	// Position is the top,left of our shape.
-	IsInView(position mathf.Vec2, width, height float64) bool
+	IsInView(bounds mathf.Bounds) bool
 }
 
 // Drawer is the default drawing method
