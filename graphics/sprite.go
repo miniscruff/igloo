@@ -23,7 +23,6 @@ type Sprite struct {
 func (s *Sprite) Draw(dest *ebiten.Image, camera Camera) {
 	if s.Transform.IsDirty() || camera.IsDirty() {
 		s.inView = camera.IsInView(s.Transform.Bounds())
-
 		if s.inView {
 			screenGeom := camera.WorldToScreen(s.Transform.GeoM())
 			s.options.GeoM = screenGeom

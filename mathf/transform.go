@@ -175,6 +175,10 @@ func (t *Transform) SetPosition(pos Vec2) {
 
 // Translate will move x and y by our vec2
 func (t *Transform) Translate(delta Vec2) {
+	if delta == Vec2Zero {
+		return
+	}
+
 	t.position.X += delta.X
 	t.position.Y += delta.Y
 	t.isDirty = true
@@ -182,12 +186,20 @@ func (t *Transform) Translate(delta Vec2) {
 
 // TranslateX moves us in the X axis
 func (t *Transform) TranslateX(x float64) {
+	if x == 0 {
+		return
+	}
+
 	t.position.X += x
 	t.isDirty = true
 }
 
 // TranslateY moves us in the Y axis
 func (t *Transform) TranslateY(y float64) {
+	if y == 0 {
+		return
+	}
+
 	t.position.Y += y
 	t.isDirty = true
 }
@@ -200,7 +212,7 @@ func (t *Transform) Size() (float64, float64) {
 // Bounds of our transform
 // NOTE: does not take into account rotation yet...
 func (t *Transform) Bounds() Bounds {
-	anchorOffset := t.anchor.Mul(t.position)
+	anchorOffset := t.anchor.Mul(Vec2{X: t.width, Y: t.height})
 	topLeft := t.position.Sub(anchorOffset)
 
 	return NewBoundsWidthHeight(
