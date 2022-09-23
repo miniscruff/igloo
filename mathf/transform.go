@@ -121,6 +121,9 @@ func (t *Transform) SetWidth(width float64) {
 	if t.width == width {
 		return
 	}
+	if width < 0 {
+		width = 0
+	}
 
 	t.width = width
 	t.isDirty = true
@@ -129,6 +132,9 @@ func (t *Transform) SetWidth(width float64) {
 func (t *Transform) SetHeight(height float64) {
 	if t.height == height {
 		return
+	}
+	if height < 0 {
+		height = 0
 	}
 
 	t.height = height

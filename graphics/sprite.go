@@ -34,7 +34,7 @@ func (s *Sprite) Draw(dest *ebiten.Image, camera Camera) {
 	}
 }
 
-// NewSprite will create a sprite with image and transform.
+// NewSprite will create a sprite with image and transform options.
 // Will configure transform to use the size of our image as the natural size.
 func NewSprite(image *ebiten.Image, options ...mathf.TransformOption) *Sprite {
 	w, h := image.Size()
@@ -43,6 +43,23 @@ func NewSprite(image *ebiten.Image, options ...mathf.TransformOption) *Sprite {
 		mathf.TransformWithNaturalSize(float64(w), float64(h)),
 	}, options...)
 	transform := mathf.NewTransform(options...)
+
+	sprite := &Sprite{
+		Image:     image,
+		Transform: transform,
+		inView:    false,
+		options:   &ebiten.DrawImageOptions{},
+	}
+
+	return sprite
+}
+
+// NewSprite will create a sprite with image and transform.
+// Will configure transform to use the size of our image as the natural size.
+func NewSpriteWithTransform(image *ebiten.Image, transform *mathf.Transform) *Sprite {
+	w, h := image.Size()
+	transform.SetNaturalWidth(float64(w))
+	transform.SetNaturalHeight(float64(h))
 
 	sprite := &Sprite{
 		Image:     image,

@@ -40,17 +40,21 @@ func (fsm *FSM[T]) Current() T {
 	return fsm.current
 }
 
-// Transition to a new state
-// will return true if we were able to transition, otherwise false
-func (fsm *FSM[T]) Transition(value T) bool {
+func (fsm *FSM[T]) CanTransition(value T) bool {
 	if fsm.current == value {
 		return false
 	}
 
 	possibleTransitions := fsm.transitions[fsm.current]
-
 	_, canTransition := possibleTransitions[value]
-	if !canTransition {
+
+	return canTransition
+}
+
+// Transition to a new state
+// will return true if we were able to transition, otherwise false
+func (fsm *FSM[T]) Transition(value T) bool {
+	if !fsm.CanTransition(value) {
 		return false
 	}
 

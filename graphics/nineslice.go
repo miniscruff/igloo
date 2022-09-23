@@ -32,7 +32,15 @@ func (s *NineSlice) positionAndScaleImages() {
 	anchor := s.Transform.Anchor()
 
 	centerWidth := width - float64(s.borders.Left-s.borders.Right)
+	if centerWidth <= 0 {
+		centerWidth = 0
+	}
+
 	middleHeight := height - float64(s.borders.Top-s.borders.Bottom)
+	if middleHeight <= 0 {
+		middleHeight = 0
+	}
+
 	halfCenterWidth := centerWidth / 2
 	halfMiddleHeight := middleHeight / 2
 	centerX := s.Transform.X() - width*anchor.X + width*0.5
