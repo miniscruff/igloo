@@ -62,6 +62,7 @@ func (fsm *FSM[T]) Transition(value T) bool {
 	if fsm.handlers[value] != nil {
 		fsm.handlers[value].Publish()
 	}
+
 	return true
 }
 

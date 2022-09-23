@@ -8,33 +8,33 @@ import (
 
 func TestBoundsContains(t *testing.T) {
 	tests := map[string]struct {
-		us mathf.Bounds
-		point mathf.Vec2
+		us       mathf.Bounds
+		point    mathf.Vec2
 		expected bool
 	}{
 		"left": {
-			us: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
-			point: mathf.Vec2{X: 0, Y: 20},
+			us:       mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			point:    mathf.Vec2{X: 0, Y: 20},
 			expected: false,
 		},
 		"right": {
-			us: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
-			point: mathf.Vec2{X: 55, Y: 20},
+			us:       mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			point:    mathf.Vec2{X: 55, Y: 20},
 			expected: false,
 		},
 		"above": {
-			us: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
-			point: mathf.Vec2{X: 20, Y: 0},
+			us:       mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			point:    mathf.Vec2{X: 20, Y: 0},
 			expected: false,
 		},
 		"below": {
-			us: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
-			point: mathf.Vec2{X: 20, Y: 55},
+			us:       mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			point:    mathf.Vec2{X: 20, Y: 55},
 			expected: false,
 		},
 		"in": {
-			us: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
-			point: mathf.Vec2{X: 17, Y: 18},
+			us:       mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			point:    mathf.Vec2{X: 17, Y: 18},
 			expected: true,
 		},
 	}
@@ -51,23 +51,23 @@ func TestBoundsContains(t *testing.T) {
 
 func TestBoundsOverlaps(t *testing.T) {
 	tests := map[string]struct {
-		us mathf.Bounds
-		other mathf.Bounds
+		us       mathf.Bounds
+		other    mathf.Bounds
 		expected bool
 	}{
 		"outside": {
-			us: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
-			other: mathf.NewBoundsWidthHeight(2, 2, 8, 8),
+			us:       mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			other:    mathf.NewBoundsWidthHeight(2, 2, 8, 8),
 			expected: false,
 		},
 		"partially inside": {
-			us: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
-			other: mathf.NewBoundsWidthHeight(30, 30, 25, 25),
+			us:       mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			other:    mathf.NewBoundsWidthHeight(30, 30, 25, 25),
 			expected: true,
 		},
 		"completely inside": {
-			us: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
-			other: mathf.NewBoundsWidthHeight(12, 15, 6, 6),
+			us:       mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			other:    mathf.NewBoundsWidthHeight(12, 15, 6, 6),
 			expected: true,
 		},
 	}
@@ -84,23 +84,23 @@ func TestBoundsOverlaps(t *testing.T) {
 
 func TestBoundsInside(t *testing.T) {
 	tests := map[string]struct {
-		us mathf.Bounds
-		other mathf.Bounds
+		us       mathf.Bounds
+		other    mathf.Bounds
 		expected bool
 	}{
 		"outside": {
-			us: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
-			other: mathf.NewBoundsWidthHeight(2, 2, 8, 8),
+			us:       mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			other:    mathf.NewBoundsWidthHeight(2, 2, 8, 8),
 			expected: false,
 		},
 		"partially inside": {
-			us: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
-			other: mathf.NewBoundsWidthHeight(30, 30, 25, 25),
+			us:       mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			other:    mathf.NewBoundsWidthHeight(30, 30, 25, 25),
 			expected: false,
 		},
 		"completely inside": {
-			us: mathf.NewBoundsWidthHeight(12, 15, 6, 6),
-			other: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			us:       mathf.NewBoundsWidthHeight(12, 15, 6, 6),
+			other:    mathf.NewBoundsWidthHeight(10, 10, 25, 25),
 			expected: true,
 		},
 	}
@@ -117,23 +117,23 @@ func TestBoundsInside(t *testing.T) {
 
 func TestBoundsSurrounds(t *testing.T) {
 	tests := map[string]struct {
-		us mathf.Bounds
-		other mathf.Bounds
+		us       mathf.Bounds
+		other    mathf.Bounds
 		expected bool
 	}{
 		"outside": {
-			us: mathf.NewBoundsWidthHeight(2, 2, 8, 8),
-			other: mathf.NewBoundsWidthHeight(15, 15, 25, 25),
+			us:       mathf.NewBoundsWidthHeight(2, 2, 8, 8),
+			other:    mathf.NewBoundsWidthHeight(15, 15, 25, 25),
 			expected: false,
 		},
 		"partially outside": {
-			us: mathf.NewBoundsWidthHeight(30, 30, 25, 25),
-			other: mathf.NewBoundsWidthHeight(10, 10, 25, 25),
+			us:       mathf.NewBoundsWidthHeight(30, 30, 25, 25),
+			other:    mathf.NewBoundsWidthHeight(10, 10, 25, 25),
 			expected: false,
 		},
 		"completely surrounded": {
-			us: mathf.NewBoundsWidthHeight(5, 7, 35, 52),
-			other: mathf.NewBoundsWidthHeight(12, 15, 6, 6),
+			us:       mathf.NewBoundsWidthHeight(5, 7, 35, 52),
+			other:    mathf.NewBoundsWidthHeight(12, 15, 6, 6),
 			expected: true,
 		},
 	}
