@@ -87,11 +87,12 @@ func NewLabel(
 	rect := text.BoundString(font, labelText)
 	width := float64(rect.Bounds().Dx())
 	height := float64(rect.Bounds().Dy())
+	lineHeight := float64(text.BoundString(font, "A").Dy())
 
 	// prepend our natural size option
 	options = append([]mathf.TransformOption{
 		mathf.TransformWithNaturalSize(width, height),
-		mathf.TransformDrawFromBottom(),
+		mathf.TransformWithFixedOffset(lineHeight),
 	}, options...)
 	transform := mathf.NewTransform(options...)
 

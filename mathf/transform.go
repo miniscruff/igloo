@@ -10,7 +10,7 @@ type Transform struct {
 	rotation float64
 	anchor   Vec2
 	// text is drawn from the bottom, this option adjusts the anchor
-	fromBottom    bool
+	fixedOffset   float64
 	width         float64
 	height        float64
 	naturalWidth  float64
@@ -240,13 +240,7 @@ func (t *Transform) build() {
 		t.geom.Scale(t.width/t.naturalWidth, t.height/t.naturalHeight)
 	}
 
-	// handle flipping the y anchor here
-	ay := t.anchor.Y
-	if t.fromBottom {
-		ay--
-	}
-
-	t.geom.Translate(-t.width*t.anchor.X, -t.height*ay)
+	t.geom.Translate(-t.width*t.anchor.X, -t.height*t.anchor.Y+t.fixedOffset)
 
 	if t.rotation != 0 {
 		t.geom.Rotate(t.rotation)
@@ -328,9 +322,9 @@ func TransformWithAnchor(anchor Vec2) TransformOption {
 	}
 }
 
-func TransformDrawFromBottom() TransformOption {
+func TransformWithFixedOffset(offset float64) TransformOption {
 	return func(t *Transform) {
-		t.fromBottom = true
+		t.fixedOffset = offset
 	}
 }
 
@@ -343,12 +337,12 @@ func TransformDrawFromBottom() TransformOption {
 // Note that transforms start dirty.
 func NewTransform(options ...TransformOption) *Transform {
 	t := &Transform{
-		position:   Vec2Zero,
-		rotation:   0,
-		anchor:     AnchorTopLeft,
-		fromBottom: false,
-		geom:       ebiten.GeoM{},
-		isDirty:    true,
+		position:    Vec2Zero,
+		rotation:    0,
+		anchor:      AnchorTopLeft,
+		fixedOffset: 0,
+		geom:        ebiten.GeoM{},
+		isDirty:     true,
 	}
 
 	for _, o := range options {
