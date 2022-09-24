@@ -114,6 +114,8 @@ func (g *Game) Draw(dest *ebiten.Image) {
 // Push a new scene to the top of the stack
 func Push(scene Scene) {
 	game.scenes = append(game.scenes, scene)
+	// force an update as well as it will be the newest scene
+	scene.Update(game.gameTime)
 }
 
 // Pop a scene off the stack
