@@ -354,7 +354,7 @@ func NewTransform(options ...TransformOption) *Transform {
 
 // Transform tweens
 
-func NewRotationClip(
+func NewRotationTween(
 	target *Transform,
 	start, end, duration float64,
 	useRelative bool,
@@ -384,7 +384,7 @@ func NewRotationClip(
 	return t
 }
 
-func NewPositionClip(
+func NewPositionTween(
 	target *Transform,
 	start, end Vec2,
 	duration float64,
@@ -407,6 +407,26 @@ func NewPositionClip(
 			endPosition = target.Position().Add(end)
 		})(t)
 	}
+
+	for _, opt := range options {
+		opt(t)
+	}
+
+	return t
+}
+
+func NewWidthTween(
+	target *Transform,
+	start, end float64,
+	duration float64,
+	options ...TweenOption,
+) *Tween {
+	t := NewTween(
+		duration,
+		TweenUpdateFunc(func(value float64) {
+			target.SetWidth(Lerp(start, end, value))
+		}),
+	)
 
 	for _, opt := range options {
 		opt(t)

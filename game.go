@@ -45,6 +45,7 @@ var (
 
 type Game struct {
 	gameTime      *mathf.GameTime
+	ticker        *mathf.Ticker
 	scenes        []Scene
 	outsideWidth  int
 	outsideHeight int
@@ -94,6 +95,7 @@ func SetWindowSize(w, h int) {
 
 // Update the top scene of the stack
 func (g *Game) Update() error {
+	g.ticker.Tick(g.gameTime)
 	lastScene := g.scenes[len(g.scenes)-1]
 	lastScene.Update(g.gameTime)
 
@@ -126,6 +128,10 @@ func Pop() {
 	game.scenes = game.scenes[:len(game.scenes)-1]
 }
 
+func AddTicker(imp mathf.TickerImp) {
+	game.ticker.Add(imp)
+}
+
 // Exit the game at the end of the next update
 func Exit() {
 	exit = true
@@ -134,6 +140,7 @@ func Exit() {
 func InitGame() {
 	game = &Game{
 		gameTime:     mathf.NewGameTime(),
+		ticker:       mathf.NewTicker(),
 		screenWidth:  800,
 		screenHeight: 600,
 	}
