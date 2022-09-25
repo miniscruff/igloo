@@ -143,6 +143,11 @@ func (t *Transform) SetHeight(height float64) {
 	t.isDirty = true
 }
 
+func (t Transform) SetSize(width, height float64) {
+	t.SetWidth(width)
+	t.SetHeight(height)
+}
+
 // SetNaturalWidth will set the natural width
 func (t *Transform) SetNaturalWidth(naturalWidth float64) {
 	if t.naturalWidth == naturalWidth {

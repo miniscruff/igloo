@@ -12,16 +12,20 @@ import (
 type Sprite struct {
 	Image     *ebiten.Image
 	Transform *mathf.Transform
-	// draw cache
-	inView  bool
-	options *ebiten.DrawImageOptions
+	Visible   bool
+
+	lastVisible bool
+	inView      bool
+	options     *ebiten.DrawImageOptions
 }
 
 // Draw will render the sprite onto the canvas.
 // If our transform, sprite or camera are dirty then we will update internal
 // values accordingly.
 func (s *Sprite) Draw(dest *ebiten.Image, camera Camera) {
-	if s.Transform.IsDirty() || camera.IsDirty() {
+	turnedOn := s.Visible && !s.lastVisible
+
+	if turnedOn || (s.Visible && (s.Transform.IsDirty() || camera.IsDirty())) {
 		s.inView = camera.IsInView(s.Transform.Bounds())
 		if s.inView {
 			screenGeom := camera.WorldToScreen(s.Transform.GeoM())
@@ -29,9 +33,11 @@ func (s *Sprite) Draw(dest *ebiten.Image, camera Camera) {
 		}
 	}
 
-	if s.inView {
+	if s.inView && s.Visible {
 		dest.DrawImage(s.Image, s.options)
 	}
+
+	s.lastVisible = s.Visible
 }
 
 // NewSprite will create a sprite with image and transform options.
@@ -45,10 +51,12 @@ func NewSprite(image *ebiten.Image, options ...mathf.TransformOption) *Sprite {
 	transform := mathf.NewTransform(options...)
 
 	sprite := &Sprite{
-		Image:     image,
-		Transform: transform,
-		inView:    false,
-		options:   &ebiten.DrawImageOptions{},
+		Image:       image,
+		Transform:   transform,
+		Visible:     true,
+		lastVisible: true,
+		inView:      false,
+		options:     &ebiten.DrawImageOptions{},
 	}
 
 	return sprite
@@ -62,10 +70,12 @@ func NewSpriteWithTransform(image *ebiten.Image, transform *mathf.Transform) *Sp
 	transform.SetNaturalHeight(float64(h))
 
 	sprite := &Sprite{
-		Image:     image,
-		Transform: transform,
-		inView:    false,
-		options:   &ebiten.DrawImageOptions{},
+		Image:       image,
+		Transform:   transform,
+		Visible:     true,
+		lastVisible: true,
+		inView:      false,
+		options:     &ebiten.DrawImageOptions{},
 	}
 
 	return sprite

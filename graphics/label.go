@@ -12,11 +12,14 @@ import (
 
 type Label struct {
 	Transform *mathf.Transform
-	font      font.Face
-	text      string
-	color     color.Color
-	inView    bool
-	options   *ebiten.DrawImageOptions
+	Visible   bool
+
+	font        font.Face
+	text        string
+	color       color.Color
+	lastVisible bool
+	inView      bool
+	options     *ebiten.DrawImageOptions
 }
 
 func (l *Label) Text() string {
@@ -64,7 +67,9 @@ func (l *Label) SetFont(newFont font.Face) {
 }
 
 func (l *Label) Draw(dest *ebiten.Image, camera Camera) {
-	if l.Transform.IsDirty() || camera.IsDirty() {
+	turnedOn := l.Visible && !l.lastVisible
+
+	if turnedOn || (l.Visible && (l.Transform.IsDirty() || camera.IsDirty())) {
 		l.inView = camera.IsInView(l.Transform.Bounds())
 
 		if l.inView {
@@ -73,9 +78,11 @@ func (l *Label) Draw(dest *ebiten.Image, camera Camera) {
 		}
 	}
 
-	if l.inView {
+	if l.inView && l.Visible {
 		text.DrawWithOptions(dest, l.text, l.font, l.options)
 	}
+
+	l.lastVisible = l.Visible
 }
 
 func NewLabel(
@@ -97,11 +104,13 @@ func NewLabel(
 	transform := mathf.NewTransform(options...)
 
 	label := &Label{
-		font:      font,
-		Transform: transform,
-		text:      labelText,
-		inView:    false,
-		options:   &ebiten.DrawImageOptions{},
+		Transform:   transform,
+		Visible:     true,
+		font:        font,
+		text:        labelText,
+		inView:      false,
+		lastVisible: true,
+		options:     &ebiten.DrawImageOptions{},
 	}
 	label.SetColor(color)
 

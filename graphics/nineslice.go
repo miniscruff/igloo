@@ -12,6 +12,7 @@ import (
 type NineSlice struct {
 	Image     *ebiten.Image
 	Transform *mathf.Transform
+	Visible   bool
 
 	// internal rendering values
 	topLeft      *Sprite
@@ -24,6 +25,7 @@ type NineSlice struct {
 	bottomCenter *Sprite
 	bottomRight  *Sprite
 	borders      SliceBorders
+	lastVisible  bool
 }
 
 func (s *NineSlice) positionAndScaleImages() {
@@ -87,9 +89,24 @@ func (s *NineSlice) positionAndScaleImages() {
 // If our transform, sprite or camera are dirty then we will update internal
 // values accordingly.
 func (s *NineSlice) Draw(dest *ebiten.Image, camera Camera) {
-	if s.Transform.IsDirty() {
+	turnedOn := s.Visible && !s.lastVisible
+	turnedOff := !s.Visible && s.lastVisible
+
+	if s.Transform.IsDirty() || turnedOn {
 		s.positionAndScaleImages()
 		s.Transform.Clean()
+	}
+
+	if turnedOn || turnedOff {
+		s.topLeft.Visible = s.Visible
+		s.topCenter.Visible = s.Visible
+		s.topRight.Visible = s.Visible
+		s.middleLeft.Visible = s.Visible
+		s.middleCenter.Visible = s.Visible
+		s.middleRight.Visible = s.Visible
+		s.bottomLeft.Visible = s.Visible
+		s.bottomCenter.Visible = s.Visible
+		s.bottomRight.Visible = s.Visible
 	}
 
 	s.topLeft.Draw(dest, camera)
@@ -101,6 +118,8 @@ func (s *NineSlice) Draw(dest *ebiten.Image, camera Camera) {
 	s.bottomLeft.Draw(dest, camera)
 	s.bottomCenter.Draw(dest, camera)
 	s.bottomRight.Draw(dest, camera)
+
+	s.lastVisible = s.Visible
 }
 
 // SliceBorders organizes the sizes for our nine slice to generate the internal sprites.
@@ -211,6 +230,7 @@ func NewNineSlice(
 	nineSlice := &NineSlice{
 		Image:        image,
 		Transform:    transform,
+		Visible:      true,
 		borders:      borders,
 		topLeft:      borders.TopLeftSprite(image),
 		topCenter:    borders.TopCenterSprite(image),
@@ -221,6 +241,7 @@ func NewNineSlice(
 		bottomLeft:   borders.BottomLeftSprite(image),
 		bottomCenter: borders.BottomCenterSprite(image),
 		bottomRight:  borders.BottomRightSprite(image),
+		lastVisible:  true,
 	}
 
 	return nineSlice
