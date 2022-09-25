@@ -24,8 +24,13 @@ type Sprite struct {
 // values accordingly.
 func (s *Sprite) Draw(dest *ebiten.Image, camera Camera) {
 	turnedOn := s.Visible && !s.lastVisible
+	s.lastVisible = s.Visible
 
-	if turnedOn || (s.Visible && (s.Transform.IsDirty() || camera.IsDirty())) {
+	if !s.Visible {
+		return
+	}
+
+	if turnedOn || s.Transform.IsDirty() || camera.IsDirty() {
 		s.inView = camera.IsInView(s.Transform.Bounds())
 		if s.inView {
 			screenGeom := camera.WorldToScreen(s.Transform.GeoM())
@@ -33,11 +38,9 @@ func (s *Sprite) Draw(dest *ebiten.Image, camera Camera) {
 		}
 	}
 
-	if s.inView && s.Visible {
+	if s.inView {
 		dest.DrawImage(s.Image, s.options)
 	}
-
-	s.lastVisible = s.Visible
 }
 
 // NewSprite will create a sprite with image and transform options.

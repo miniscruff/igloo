@@ -68,8 +68,13 @@ func (l *Label) SetFont(newFont font.Face) {
 
 func (l *Label) Draw(dest *ebiten.Image, camera Camera) {
 	turnedOn := l.Visible && !l.lastVisible
+	l.lastVisible = l.Visible
 
-	if turnedOn || (l.Visible && (l.Transform.IsDirty() || camera.IsDirty())) {
+	if !l.Visible {
+		return
+	}
+
+	if turnedOn || l.Transform.IsDirty() || camera.IsDirty() {
 		l.inView = camera.IsInView(l.Transform.Bounds())
 
 		if l.inView {
@@ -78,11 +83,9 @@ func (l *Label) Draw(dest *ebiten.Image, camera Camera) {
 		}
 	}
 
-	if l.inView && l.Visible {
+	if l.inView {
 		text.DrawWithOptions(dest, l.text, l.font, l.options)
 	}
-
-	l.lastVisible = l.Visible
 }
 
 func NewLabel(
