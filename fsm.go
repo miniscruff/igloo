@@ -15,6 +15,7 @@ func NewFSMTransition[T ~string](from T, to ...T) FSMTransition[T] {
 // FSM is a mini finite state machine
 type FSM[T ~string] struct {
 	current     T
+	last        T
 	transitions map[T]map[T]struct{}
 	handlers    map[T]*EventStoreZero
 }
@@ -40,6 +41,10 @@ func (fsm *FSM[T]) Current() T {
 	return fsm.current
 }
 
+func (fsm *FSM[T]) Last() T {
+	return fsm.last
+}
+
 func (fsm *FSM[T]) CanTransition(value T) bool {
 	if fsm.current == value {
 		return false
@@ -58,6 +63,7 @@ func (fsm *FSM[T]) Transition(value T) bool {
 		return false
 	}
 
+	fsm.last = fsm.current
 	fsm.current = value
 	if fsm.handlers[value] != nil {
 		fsm.handlers[value].Publish()
