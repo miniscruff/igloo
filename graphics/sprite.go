@@ -13,10 +13,12 @@ type Sprite struct {
 	Image     *ebiten.Image
 	Transform *mathf.Transform
 	Visible   bool
+	// DrawOptions when drawing, note that the GeoM value is controlled
+	// by the transform so changing it here will get overriden.
+	DrawOptions *ebiten.DrawImageOptions
 
 	lastVisible bool
 	inView      bool
-	options     *ebiten.DrawImageOptions
 }
 
 // Draw will render the sprite onto the canvas.
@@ -34,12 +36,12 @@ func (s *Sprite) Draw(dest *ebiten.Image, camera Camera) {
 		s.inView = camera.IsInView(s.Transform.Bounds())
 		if s.inView {
 			screenGeom := camera.WorldToScreen(s.Transform.GeoM())
-			s.options.GeoM = screenGeom
+			s.DrawOptions.GeoM = screenGeom
 		}
 	}
 
 	if s.inView {
-		dest.DrawImage(s.Image, s.options)
+		dest.DrawImage(s.Image, s.DrawOptions)
 	}
 }
 
@@ -59,7 +61,31 @@ func NewSprite(image *ebiten.Image, options ...mathf.TransformOption) *Sprite {
 		Visible:     true,
 		lastVisible: true,
 		inView:      false,
-		options:     &ebiten.DrawImageOptions{},
+		DrawOptions: &ebiten.DrawImageOptions{},
+	}
+
+	return sprite
+}
+
+func NewSpriteWithDrawOptions(
+	image *ebiten.Image,
+	drawOptions ebiten.DrawImageOptions,
+	options ...mathf.TransformOption,
+) *Sprite {
+	w, h := image.Size()
+	// prepend our natural size option
+	options = append([]mathf.TransformOption{
+		mathf.TransformWithNaturalSize(float64(w), float64(h)),
+	}, options...)
+	transform := mathf.NewTransform(options...)
+
+	sprite := &Sprite{
+		Image:       image,
+		Transform:   transform,
+		Visible:     true,
+		lastVisible: true,
+		inView:      false,
+		DrawOptions: &drawOptions,
 	}
 
 	return sprite
@@ -78,7 +104,7 @@ func NewSpriteWithTransform(image *ebiten.Image, transform *mathf.Transform) *Sp
 		Visible:     true,
 		lastVisible: true,
 		inView:      false,
-		options:     &ebiten.DrawImageOptions{},
+		DrawOptions: &ebiten.DrawImageOptions{},
 	}
 
 	return sprite
