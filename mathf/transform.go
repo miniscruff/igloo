@@ -1,6 +1,7 @@
 package mathf
 
 import (
+	"log"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -144,8 +145,11 @@ func (t *Transform) SetHeight(height float64) {
 }
 
 func (t Transform) SetSize(width, height float64) {
+	log.Printf("args: %v %v", width, height)
+	log.Printf("before: %v %v", t.width, t.height)
 	t.SetWidth(width)
 	t.SetHeight(height)
+	log.Printf("after: %v %v", t.width, t.height)
 }
 
 // SetNaturalWidth will set the natural width
@@ -220,6 +224,10 @@ func (t *Transform) TranslateY(y float64) {
 // Size of our transform
 func (t *Transform) Size() (float64, float64) {
 	return t.width, t.height
+}
+
+func (t *Transform) NaturalSize() (float64, float64) {
+	return t.naturalWidth, t.naturalHeight
 }
 
 // Bounds of our transform

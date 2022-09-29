@@ -35,6 +35,7 @@ func (l *Label) SetText(newText string) {
 	rect := text.BoundString(l.font, l.text)
 	l.Transform.SetNaturalWidth(float64(rect.Bounds().Dx()))
 	l.Transform.SetNaturalHeight(float64(rect.Bounds().Dy()))
+	l.Transform.ResetScale()
 }
 
 func (l *Label) Color() color.Color {
@@ -64,6 +65,7 @@ func (l *Label) SetFont(newFont font.Face) {
 	rect := text.BoundString(l.font, l.text)
 	l.Transform.SetNaturalWidth(float64(rect.Bounds().Dx()))
 	l.Transform.SetNaturalHeight(float64(rect.Bounds().Dy()))
+	l.Transform.ResetScale()
 }
 
 func (l *Label) Draw(dest *ebiten.Image, camera Camera) {

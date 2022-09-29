@@ -83,3 +83,9 @@ func TimerWithRepeat(mode TimerRepeatMode) TimerOption {
 		t.repeat = mode
 	}
 }
+
+func TimerPlay() TimerOption {
+	return func(t *Timer) {
+		t.isPaused = false
+	}
+}
