@@ -1,7 +1,6 @@
 package mathf
 
 import (
-	"log"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -144,12 +143,9 @@ func (t *Transform) SetHeight(height float64) {
 	t.isDirty = true
 }
 
-func (t Transform) SetSize(width, height float64) {
-	log.Printf("args: %v %v", width, height)
-	log.Printf("before: %v %v", t.width, t.height)
+func (t *Transform) SetSize(width, height float64) {
 	t.SetWidth(width)
 	t.SetHeight(height)
-	log.Printf("after: %v %v", t.width, t.height)
 }
 
 // SetNaturalWidth will set the natural width
