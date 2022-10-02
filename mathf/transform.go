@@ -6,16 +6,15 @@ import (
 
 // Transform holds all data associated to a location
 type Transform struct {
-	position Vec2
-	rotation float64
-	anchor   Vec2
-	// text is drawn from the bottom, this option adjusts the anchor
-	fixedOffset   float64
-	width         float64
-	height        float64
-	naturalWidth  float64
-	naturalHeight float64
-	geom          ebiten.GeoM
+	position      Vec2        // x y of our anchor ( pivot )
+	rotation      float64     // in radians
+	anchor        Vec2        // should be pivot
+	fixedOffset   float64     // text is drawn from the bottom, this option adjusts the anchor
+	width         float64     // width before scaling
+	height        float64     // height before scaling
+	naturalWidth  float64     // native width of our source graphic
+	naturalHeight float64     // native height of our source graphic
+	geom          ebiten.GeoM // calculated geom matrix
 	isDirty       bool
 }
 

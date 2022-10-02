@@ -4,10 +4,10 @@ on:
   push:
     branches: [ main ]
     paths: [ CHANGELOG.md ]
-    
+
 # TODO: use changie action after I make it
 env:
-  CHANGIE_VERSION: 1.9.0
+  CHANGIE_VERSION: 1.9.1
 
 jobs:
   release:

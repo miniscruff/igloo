@@ -10,6 +10,9 @@ import (
 	"github.com/miniscruff/igloo/mathf"
 )
 
+// probably want a text render mode like scale, word wrap or something
+// otherwise the size is just based on the text input
+
 type Label struct {
 	Transform *mathf.Transform
 	Visible   bool
