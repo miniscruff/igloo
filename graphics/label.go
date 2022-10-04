@@ -10,13 +10,19 @@ import (
 	"github.com/miniscruff/igloo/mathf"
 )
 
+// probably want a text render mode like scale, word wrap or something
+// otherwise the size is just based on the text input
+
 type Label struct {
 	Transform *mathf.Transform
-	font      font.Face
-	text      string
-	color     color.Color
-	inView    bool
-	options   *ebiten.DrawImageOptions
+	Visible   bool
+
+	font        font.Face
+	text        string
+	color       color.Color
+	lastVisible bool
+	inView      bool
+	options     *ebiten.DrawImageOptions
 }
 
 func (l *Label) Text() string {
@@ -32,6 +38,7 @@ func (l *Label) SetText(newText string) {
 	rect := text.BoundString(l.font, l.text)
 	l.Transform.SetNaturalWidth(float64(rect.Bounds().Dx()))
 	l.Transform.SetNaturalHeight(float64(rect.Bounds().Dy()))
+	l.Transform.ResetScale()
 }
 
 func (l *Label) Color() color.Color {
@@ -61,10 +68,18 @@ func (l *Label) SetFont(newFont font.Face) {
 	rect := text.BoundString(l.font, l.text)
 	l.Transform.SetNaturalWidth(float64(rect.Bounds().Dx()))
 	l.Transform.SetNaturalHeight(float64(rect.Bounds().Dy()))
+	l.Transform.ResetScale()
 }
 
 func (l *Label) Draw(dest *ebiten.Image, camera Camera) {
-	if l.Transform.IsDirty() || camera.IsDirty() {
+	turnedOn := l.Visible && !l.lastVisible
+	l.lastVisible = l.Visible
+
+	if !l.Visible {
+		return
+	}
+
+	if turnedOn || l.Transform.IsDirty() || camera.IsDirty() {
 		l.inView = camera.IsInView(l.Transform.Bounds())
 
 		if l.inView {
@@ -87,20 +102,23 @@ func NewLabel(
 	rect := text.BoundString(font, labelText)
 	width := float64(rect.Bounds().Dx())
 	height := float64(rect.Bounds().Dy())
+	lineHeight := float64(text.BoundString(font, "A").Dy())
 
 	// prepend our natural size option
 	options = append([]mathf.TransformOption{
 		mathf.TransformWithNaturalSize(width, height),
-		mathf.TransformDrawFromBottom(),
+		mathf.TransformWithFixedOffset(lineHeight),
 	}, options...)
 	transform := mathf.NewTransform(options...)
 
 	label := &Label{
-		font:      font,
-		Transform: transform,
-		text:      labelText,
-		inView:    false,
-		options:   &ebiten.DrawImageOptions{},
+		Transform:   transform,
+		Visible:     true,
+		font:        font,
+		text:        labelText,
+		inView:      false,
+		lastVisible: true,
+		options:     &ebiten.DrawImageOptions{},
 	}
 	label.SetColor(color)
 

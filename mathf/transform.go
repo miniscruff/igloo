@@ -6,16 +6,15 @@ import (
 
 // Transform holds all data associated to a location
 type Transform struct {
-	position Vec2
-	rotation float64
-	anchor   Vec2
-	// text is drawn from the bottom, this option adjusts the anchor
-	fromBottom    bool
-	width         float64
-	height        float64
-	naturalWidth  float64
-	naturalHeight float64
-	geom          ebiten.GeoM
+	position      Vec2        // x y of our anchor ( pivot )
+	rotation      float64     // in radians
+	anchor        Vec2        // should be pivot
+	fixedOffset   float64     // text is drawn from the bottom, this option adjusts the anchor
+	width         float64     // width before scaling
+	height        float64     // height before scaling
+	naturalWidth  float64     // native width of our source graphic
+	naturalHeight float64     // native height of our source graphic
+	geom          ebiten.GeoM // calculated geom matrix
 	isDirty       bool
 }
 
@@ -122,6 +121,10 @@ func (t *Transform) SetWidth(width float64) {
 		return
 	}
 
+	if width < 0 {
+		width = 0
+	}
+
 	t.width = width
 	t.isDirty = true
 }
@@ -131,8 +134,17 @@ func (t *Transform) SetHeight(height float64) {
 		return
 	}
 
+	if height < 0 {
+		height = 0
+	}
+
 	t.height = height
 	t.isDirty = true
+}
+
+func (t *Transform) SetSize(width, height float64) {
+	t.SetWidth(width)
+	t.SetHeight(height)
 }
 
 // SetNaturalWidth will set the natural width
@@ -175,6 +187,10 @@ func (t *Transform) SetPosition(pos Vec2) {
 
 // Translate will move x and y by our vec2
 func (t *Transform) Translate(delta Vec2) {
+	if delta == Vec2Zero {
+		return
+	}
+
 	t.position.X += delta.X
 	t.position.Y += delta.Y
 	t.isDirty = true
@@ -182,12 +198,20 @@ func (t *Transform) Translate(delta Vec2) {
 
 // TranslateX moves us in the X axis
 func (t *Transform) TranslateX(x float64) {
+	if x == 0 {
+		return
+	}
+
 	t.position.X += x
 	t.isDirty = true
 }
 
 // TranslateY moves us in the Y axis
 func (t *Transform) TranslateY(y float64) {
+	if y == 0 {
+		return
+	}
+
 	t.position.Y += y
 	t.isDirty = true
 }
@@ -197,10 +221,14 @@ func (t *Transform) Size() (float64, float64) {
 	return t.width, t.height
 }
 
+func (t *Transform) NaturalSize() (float64, float64) {
+	return t.naturalWidth, t.naturalHeight
+}
+
 // Bounds of our transform
 // NOTE: does not take into account rotation yet...
 func (t *Transform) Bounds() Bounds {
-	anchorOffset := t.anchor.Mul(t.position)
+	anchorOffset := t.anchor.Mul(Vec2{X: t.width, Y: t.height})
 	topLeft := t.position.Sub(anchorOffset)
 
 	return NewBoundsWidthHeight(
@@ -220,13 +248,7 @@ func (t *Transform) build() {
 		t.geom.Scale(t.width/t.naturalWidth, t.height/t.naturalHeight)
 	}
 
-	// handle flipping the y anchor here
-	ay := t.anchor.Y
-	if t.fromBottom {
-		ay--
-	}
-
-	t.geom.Translate(-t.width*t.anchor.X, -t.height*ay)
+	t.geom.Translate(-t.width*t.anchor.X, -t.height*t.anchor.Y+t.fixedOffset)
 
 	if t.rotation != 0 {
 		t.geom.Rotate(t.rotation)
@@ -308,9 +330,9 @@ func TransformWithAnchor(anchor Vec2) TransformOption {
 	}
 }
 
-func TransformDrawFromBottom() TransformOption {
+func TransformWithFixedOffset(offset float64) TransformOption {
 	return func(t *Transform) {
-		t.fromBottom = true
+		t.fixedOffset = offset
 	}
 }
 
@@ -323,12 +345,12 @@ func TransformDrawFromBottom() TransformOption {
 // Note that transforms start dirty.
 func NewTransform(options ...TransformOption) *Transform {
 	t := &Transform{
-		position:   Vec2Zero,
-		rotation:   0,
-		anchor:     AnchorTopLeft,
-		fromBottom: false,
-		geom:       ebiten.GeoM{},
-		isDirty:    true,
+		position:    Vec2Zero,
+		rotation:    0,
+		anchor:      AnchorTopLeft,
+		fixedOffset: 0,
+		geom:        ebiten.GeoM{},
+		isDirty:     true,
 	}
 
 	for _, o := range options {
@@ -340,7 +362,7 @@ func NewTransform(options ...TransformOption) *Transform {
 
 // Transform tweens
 
-func NewRotationClip(
+func NewRotationTween(
 	target *Transform,
 	start, end, duration float64,
 	useRelative bool,
@@ -370,7 +392,7 @@ func NewRotationClip(
 	return t
 }
 
-func NewPositionClip(
+func NewPositionTween(
 	target *Transform,
 	start, end Vec2,
 	duration float64,
@@ -393,6 +415,26 @@ func NewPositionClip(
 			endPosition = target.Position().Add(end)
 		})(t)
 	}
+
+	for _, opt := range options {
+		opt(t)
+	}
+
+	return t
+}
+
+func NewWidthTween(
+	target *Transform,
+	start, end float64,
+	duration float64,
+	options ...TweenOption,
+) *Tween {
+	t := NewTween(
+		duration,
+		TweenUpdateFunc(func(value float64) {
+			target.SetWidth(Lerp(start, end, value))
+		}),
+	)
 
 	for _, opt := range options {
 		opt(t)

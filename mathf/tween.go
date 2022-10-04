@@ -77,6 +77,10 @@ func (t *Tween) Resume() {
 	t.isPaused = false
 }
 
+func (t *Tween) Reset() {
+	t.percent = 0
+}
+
 func (t *Tween) IsPaused() bool {
 	return t.isPaused
 }

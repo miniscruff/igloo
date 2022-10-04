@@ -12,30 +12,40 @@ import (
 type Sprite struct {
 	Image     *ebiten.Image
 	Transform *mathf.Transform
-	// draw cache
-	inView  bool
-	options *ebiten.DrawImageOptions
+	Visible   bool
+	// DrawOptions when drawing, note that the GeoM value is controlled
+	// by the transform so changing it here will get overridden.
+	DrawOptions *ebiten.DrawImageOptions
+
+	lastVisible bool
+	inView      bool
 }
 
 // Draw will render the sprite onto the canvas.
 // If our transform, sprite or camera are dirty then we will update internal
 // values accordingly.
 func (s *Sprite) Draw(dest *ebiten.Image, camera Camera) {
-	if s.Transform.IsDirty() || camera.IsDirty() {
-		s.inView = camera.IsInView(s.Transform.Bounds())
+	turnedOn := s.Visible && !s.lastVisible
+	s.lastVisible = s.Visible
 
+	if !s.Visible {
+		return
+	}
+
+	if turnedOn || s.Transform.IsDirty() || camera.IsDirty() {
+		s.inView = camera.IsInView(s.Transform.Bounds())
 		if s.inView {
 			screenGeom := camera.WorldToScreen(s.Transform.GeoM())
-			s.options.GeoM = screenGeom
+			s.DrawOptions.GeoM = screenGeom
 		}
 	}
 
 	if s.inView {
-		dest.DrawImage(s.Image, s.options)
+		dest.DrawImage(s.Image, s.DrawOptions)
 	}
 }
 
-// NewSprite will create a sprite with image and transform.
+// NewSprite will create a sprite with image and transform options.
 // Will configure transform to use the size of our image as the natural size.
 func NewSprite(image *ebiten.Image, options ...mathf.TransformOption) *Sprite {
 	w, h := image.Size()
@@ -46,10 +56,55 @@ func NewSprite(image *ebiten.Image, options ...mathf.TransformOption) *Sprite {
 	transform := mathf.NewTransform(options...)
 
 	sprite := &Sprite{
-		Image:     image,
-		Transform: transform,
-		inView:    false,
-		options:   &ebiten.DrawImageOptions{},
+		Image:       image,
+		Transform:   transform,
+		Visible:     true,
+		lastVisible: true,
+		inView:      false,
+		DrawOptions: &ebiten.DrawImageOptions{},
+	}
+
+	return sprite
+}
+
+func NewSpriteWithDrawOptions(
+	image *ebiten.Image,
+	drawOptions ebiten.DrawImageOptions,
+	options ...mathf.TransformOption,
+) *Sprite {
+	w, h := image.Size()
+	// prepend our natural size option
+	options = append([]mathf.TransformOption{
+		mathf.TransformWithNaturalSize(float64(w), float64(h)),
+	}, options...)
+	transform := mathf.NewTransform(options...)
+
+	sprite := &Sprite{
+		Image:       image,
+		Transform:   transform,
+		Visible:     true,
+		lastVisible: true,
+		inView:      false,
+		DrawOptions: &drawOptions,
+	}
+
+	return sprite
+}
+
+// NewSprite will create a sprite with image and transform.
+// Will configure transform to use the size of our image as the natural size.
+func NewSpriteWithTransform(image *ebiten.Image, transform *mathf.Transform) *Sprite {
+	w, h := image.Size()
+	transform.SetNaturalWidth(float64(w))
+	transform.SetNaturalHeight(float64(h))
+
+	sprite := &Sprite{
+		Image:       image,
+		Transform:   transform,
+		Visible:     true,
+		lastVisible: true,
+		inView:      false,
+		DrawOptions: &ebiten.DrawImageOptions{},
 	}
 
 	return sprite

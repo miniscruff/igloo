@@ -87,9 +87,7 @@ func (cm *ContentManager) LoadOpenType(path string) (*sfnt.Font, error) {
 		return cached, nil
 	}
 
-	fullPath := cm.fullPath(path)
-
-	fontBytes, err := cm.readFSFile(fullPath)
+	fontBytes, err := cm.readFSFile(path)
 	if err != nil {
 		return nil, err
 	}
