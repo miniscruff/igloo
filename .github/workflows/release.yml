@@ -19,9 +19,9 @@ jobs:
     - name: Install Changie
       uses: supplypike/setup-bin@v2
       with:
-        uri: 'https://github.com/miniscruff/changie/releases/download/v{{ env.CHANGIE_VERSION }}/changie_{{ env.CHANGIE_VERSION }}_linux_amd64.tar.gz'
+        uri: 'https://github.com/miniscruff/changie/releases/download/v${{ env.CHANGIE_VERSION }}/changie_${{ env.CHANGIE_VERSION }}_linux_amd64.tar.gz'
         name: 'changie'
-        version: 'v{{ env.CHANGIE_VERSION }}'
+        version: 'v${{ env.CHANGIE_VERSION }}'
 
     - name: Add env vars
       run: |
