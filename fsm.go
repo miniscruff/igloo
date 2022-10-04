@@ -65,6 +65,7 @@ func (fsm *FSM[T]) Transition(value T) bool {
 
 	fsm.last = fsm.current
 	fsm.current = value
+
 	if fsm.handlers[value] != nil {
 		fsm.handlers[value].Publish()
 	}

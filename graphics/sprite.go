@@ -14,7 +14,7 @@ type Sprite struct {
 	Transform *mathf.Transform
 	Visible   bool
 	// DrawOptions when drawing, note that the GeoM value is controlled
-	// by the transform so changing it here will get overriden.
+	// by the transform so changing it here will get overridden.
 	DrawOptions *ebiten.DrawImageOptions
 
 	lastVisible bool
