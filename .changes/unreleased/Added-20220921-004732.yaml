@@ -1,5 +1,0 @@
-kind: Added
-body: Vec2FromInts to create a vec2 from 2 ints
-time: 2022-09-21T00:47:32.0211221-07:00
-custom:
-  Issue: "90"
