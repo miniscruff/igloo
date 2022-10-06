@@ -1,4 +1,5 @@
 package graphics
+/*
 
 import (
 	"image/color"
@@ -124,3 +125,4 @@ func NewLabel(
 
 	return label
 }
+*/

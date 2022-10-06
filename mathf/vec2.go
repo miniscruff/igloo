@@ -12,10 +12,26 @@ type Vec2 struct {
 }
 
 var (
-	// Vec2Zero is a Vec2 of (0, 0)
-	Vec2Zero = Vec2{0, 0}
-	// Vec2One is a Vec2 of (1, 1)
-	Vec2One = Vec2{1, 1}
+	// common values
+	Vec2Zero = Vec2{X: 0, Y: 0}
+	Vec2One  = Vec2{X: 1, Y: 1}
+
+	// directions
+	Vec2Up    = Vec2{X: 0, Y: -1}
+	Vec2Down  = Vec2{X: 0, Y: 1}
+	Vec2Left  = Vec2{X: -1, Y: 0}
+	Vec2Right = Vec2{X: 1, Y: 0}
+
+	// corners and center relative values
+	Vec2TopLeft      = Vec2{X: 0, Y: 0}
+	Vec2TopCenter    = Vec2{X: 0.5, Y: 0}
+	Vec2TopRight     = Vec2{X: 1, Y: 0}
+	Vec2MiddleLeft   = Vec2{X: 0, Y: 0.5}
+	Vec2MiddleCenter = Vec2{X: 0.5, Y: 0.5}
+	Vec2MiddleRight  = Vec2{X: 1, Y: 0.5}
+	Vec2BottomLeft   = Vec2{X: 0, Y: 1}
+	Vec2BottomCenter = Vec2{X: 0.5, Y: 1}
+	Vec2BottomRight  = Vec2{X: 1, Y: 1}
 )
 
 // String returns vec2 as a string

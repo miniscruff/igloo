@@ -1,4 +1,5 @@
 package mathf
+/*
 
 type TimerCompleteFunc func()
 
@@ -31,8 +32,6 @@ func NewTimer(duration float64, options ...TimerOption) *Timer {
 		o(t)
 	}
 
-	// set the start time here with an option to customize time.Now
-
 	return t
 }
 
@@ -57,8 +56,8 @@ func (t *Timer) IsComplete() bool {
 	return t.isComplete
 }
 
-func (t *Timer) Tick(gameTime *GameTime) {
-	t.timer += gameTime.DeltaTime()
+func (t *Timer) Tick() {
+	// TODO: BROKEN
 	if t.timer >= t.duration {
 		t.completeFunc()
 
@@ -89,3 +88,4 @@ func TimerPlay() TimerOption {
 		t.isPaused = false
 	}
 }
+*/

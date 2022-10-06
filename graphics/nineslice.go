@@ -1,4 +1,5 @@
 package graphics
+/*
 
 import (
 	"image"
@@ -246,3 +247,4 @@ func NewNineSlice(
 
 	return nineSlice
 }
+*/

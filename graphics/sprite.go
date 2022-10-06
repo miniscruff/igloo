@@ -1,6 +1,79 @@
 package graphics
 
 import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/miniscruff/igloo"
+	"github.com/miniscruff/igloo/content"
+	"github.com/miniscruff/igloo/mathf"
+)
+
+type SpriteVisual struct {
+	*igloo.Visualer
+
+	sprite  *content.Sprite
+	isDirty bool
+}
+
+func NewSpriteVisual(sprite *content.Sprite) *SpriteVisual {
+	sv := &SpriteVisual{
+		sprite:  sprite,
+		isDirty: false,
+	}
+
+	sw, sh := sprite.Image.Size()
+
+	sv.Visualer = &igloo.Visualer{
+		Transform:   mathf.NewTransform(
+			mathf.TransformWithNaturalWidth(float64(sw)),
+			mathf.TransformWithNaturalHeight(float64(sh)),
+		),
+		Children:    make([]*igloo.Visualer, 0),
+		Dirtier:     sv,
+		Drawer:      sv,
+		NativeSizer: sv,
+	}
+
+	return sv
+}
+
+func (sv *SpriteVisual) Sprite() *content.Sprite {
+	return sv.sprite
+}
+
+func (sv *SpriteVisual) SetSprite(sprite *content.Sprite) {
+	if sv.sprite == sprite {
+		return
+	}
+
+	sv.sprite = sprite
+	sv.isDirty = true
+}
+
+func (sv *SpriteVisual) IsDirty() bool {
+	return sv.isDirty
+}
+
+func (sv *SpriteVisual) Clean() {
+	sv.isDirty = false
+}
+
+func (sv *SpriteVisual) NativeSize() (float64, float64) {
+	pt := sv.sprite.Image.Bounds().Size()
+	return float64(pt.X), float64(pt.Y)
+}
+
+func (sv *SpriteVisual) Draw(dest *ebiten.Image) {
+	dest.DrawImage(sv.sprite.Image, &ebiten.DrawImageOptions{
+		GeoM:          sv.Transform.GeoM(),
+		ColorM:        sv.sprite.ColorM,
+		Filter:        sv.sprite.Filter,
+		CompositeMode: sv.sprite.CompositeMode,
+	})
+}
+
+/*
+
+import (
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -14,7 +87,7 @@ type Sprite struct {
 	Transform *mathf.Transform
 	Visible   bool
 	// DrawOptions when drawing, note that the GeoM value is controlled
-	// by the transform so changing it here will get overridden.
+	// by the transform so changing it here will get overriden.
 	DrawOptions *ebiten.DrawImageOptions
 
 	lastVisible bool
@@ -161,3 +234,4 @@ func NewFrameClip(
 
 	return t
 }
+*/

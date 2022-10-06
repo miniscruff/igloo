@@ -6,16 +6,18 @@ import (
 
 // Transform holds all data associated to a location
 type Transform struct {
-	position      Vec2        // x y of our anchor ( pivot )
-	rotation      float64     // in radians
-	anchor        Vec2        // should be pivot
-	fixedOffset   float64     // text is drawn from the bottom, this option adjusts the anchor
-	width         float64     // width before scaling
-	height        float64     // height before scaling
-	naturalWidth  float64     // native width of our source graphic
-	naturalHeight float64     // native height of our source graphic
-	geom          ebiten.GeoM // calculated geom matrix
-	isDirty       bool
+	position      Vec2    // x y of our anchor ( pivot )
+	rotation      float64 // in radians
+	anchor        Vec2    // should be pivot
+	fixedOffset   float64 // text is drawn from the bottom, this option adjusts the anchor
+	width         float64 // width before scaling
+	height        float64 // height before scaling
+	naturalWidth  float64 // native width of our source graphic
+	naturalHeight float64 // native height of our source graphic
+
+	bounds  Bounds
+	geom    ebiten.GeoM // calculated geom matrix
+	isDirty bool
 }
 
 // IsDirty returns whether or not we have changed since the last update
@@ -29,11 +31,6 @@ func (t *Transform) Clean() {
 }
 
 func (t *Transform) GeoM() ebiten.GeoM {
-	if t.isDirty {
-		t.build()
-		t.Clean()
-	}
-
 	return t.geom
 }
 
@@ -228,22 +225,24 @@ func (t *Transform) NaturalSize() (float64, float64) {
 // Bounds of our transform
 // NOTE: does not take into account rotation yet...
 func (t *Transform) Bounds() Bounds {
-	anchorOffset := t.anchor.Mul(Vec2{X: t.width, Y: t.height})
-	topLeft := t.position.Sub(anchorOffset)
-
-	return NewBoundsWidthHeight(
-		topLeft.X,
-		topLeft.Y,
-		t.width,
-		t.height,
-	)
+	return t.bounds
 }
 
-// build updates our ebiten.GeoM with updated values if
-// our transform is dirty.
-func (t *Transform) build() {
+func (t *Transform) InView(other *Transform) bool {
+	return t.Bounds().Overlaps(other.Bounds())
+}
+
+// Build updates our ebiten.GeoM with updated values.
+// Be sure to only build a new GeoM if we need to.
+// Offset is the current world offset we should apply to our local values.
+func (t *Transform) Build(offset *Transform) {
 	t.geom.Reset()
 
+	// This is going to turn into a pretty large function
+	// right now it is pretty basic but we will have to handle
+	// anchoring, pivoting, proper scaling and other draw modes
+
+	// TODO: world offset scale
 	if t.width != t.naturalWidth || t.height != t.naturalHeight {
 		t.geom.Scale(t.width/t.naturalWidth, t.height/t.naturalHeight)
 	}
@@ -254,7 +253,20 @@ func (t *Transform) build() {
 		t.geom.Rotate(t.rotation)
 	}
 
+	// log.Printf("xy, offset: %v, %v at %v", t.position, offset.position, t.position.Add(offset.position))
 	t.geom.Translate(t.X(), t.Y())
+	t.geom.Translate(offset.X(), offset.Y())
+
+	// TODO: these need to be in world values
+	anchorOffset := t.anchor.Mul(Vec2{X: t.width, Y: t.height})
+	topLeft := t.position.Sub(anchorOffset)
+
+	t.bounds = NewBoundsWidthHeight(
+		topLeft.X,
+		topLeft.Y,
+		t.width,
+		t.height,
+	)
 }
 
 type TransformOption func(t *Transform)
@@ -347,7 +359,7 @@ func NewTransform(options ...TransformOption) *Transform {
 	t := &Transform{
 		position:    Vec2Zero,
 		rotation:    0,
-		anchor:      AnchorTopLeft,
+		anchor:      Vec2TopLeft,
 		fixedOffset: 0,
 		geom:        ebiten.GeoM{},
 		isDirty:     true,
