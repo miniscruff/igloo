@@ -15,59 +15,54 @@ type SpriteVisual struct {
 }
 
 func NewSpriteVisual(sprite *content.Sprite) *SpriteVisual {
-	sv := &SpriteVisual{
+	v := &SpriteVisual{
 		sprite:  sprite,
-		isDirty: false,
+		isDirty: true,
 	}
 
-	sw, sh := sprite.Image.Size()
-
-	sv.Visualer = &igloo.Visualer{
-		Transform:   mathf.NewTransform(
-			mathf.TransformWithNaturalWidth(float64(sw)),
-			mathf.TransformWithNaturalHeight(float64(sh)),
-		),
+	v.Visualer = &igloo.Visualer{
+		Transform:   mathf.NewTransform(),
 		Children:    make([]*igloo.Visualer, 0),
-		Dirtier:     sv,
-		Drawer:      sv,
-		NativeSizer: sv,
+		Dirtier:     v,
+		Drawer:      v,
+		NativeSizer: v,
 	}
 
-	return sv
+	return v
 }
 
-func (sv *SpriteVisual) Sprite() *content.Sprite {
-	return sv.sprite
+func (v *SpriteVisual) Sprite() *content.Sprite {
+	return v.sprite
 }
 
-func (sv *SpriteVisual) SetSprite(sprite *content.Sprite) {
-	if sv.sprite == sprite {
+func (v *SpriteVisual) SetSprite(sprite *content.Sprite) {
+	if v.sprite == sprite {
 		return
 	}
 
-	sv.sprite = sprite
-	sv.isDirty = true
+	v.sprite = sprite
+	v.isDirty = true
 }
 
-func (sv *SpriteVisual) IsDirty() bool {
-	return sv.isDirty
+func (v *SpriteVisual) IsDirty() bool {
+	return v.isDirty
 }
 
-func (sv *SpriteVisual) Clean() {
-	sv.isDirty = false
+func (v *SpriteVisual) Clean() {
+	v.isDirty = false
 }
 
-func (sv *SpriteVisual) NativeSize() (float64, float64) {
-	pt := sv.sprite.Image.Bounds().Size()
+func (v *SpriteVisual) NativeSize() (float64, float64) {
+	pt := v.sprite.Image.Bounds().Size()
 	return float64(pt.X), float64(pt.Y)
 }
 
-func (sv *SpriteVisual) Draw(dest *ebiten.Image) {
-	dest.DrawImage(sv.sprite.Image, &ebiten.DrawImageOptions{
-		GeoM:          sv.Transform.GeoM(),
-		ColorM:        sv.sprite.ColorM,
-		Filter:        sv.sprite.Filter,
-		CompositeMode: sv.sprite.CompositeMode,
+func (v *SpriteVisual) Draw(dest *ebiten.Image) {
+	dest.DrawImage(v.sprite.Image, &ebiten.DrawImageOptions{
+		GeoM:          v.Transform.GeoM(),
+		ColorM:        v.sprite.ColorM,
+		Filter:        v.sprite.Filter,
+		CompositeMode: v.sprite.CompositeMode,
 	})
 }
 

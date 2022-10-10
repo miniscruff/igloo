@@ -40,8 +40,7 @@ func (v *Visualer) SetVisible(state bool) {
 	}
 }
 
-func (v *Visualer) Draw(
-	dest *ebiten.Image,
+func (v *Visualer) Layout(
 	offset *mathf.Transform,
 	root *mathf.Transform,
 ) {
@@ -66,12 +65,20 @@ func (v *Visualer) Draw(
 		}
 	}
 
-	// if our own visabler is dirty, force our children to be as well
+	// if our own visual is dirty, force our children to be as well
 	if v.Dirtier.IsDirty() || v.forcedDirty {
-		v.forcedDirty = true
 		for _, child := range v.Children {
 			child.forcedDirty = true
 		}
+	}
+
+	// our own visual changed, update our own state
+	// I think a generic callback would work better here
+	// something on `OnDirty() { ... }`
+	if v.Dirtier.IsDirty() {
+		nativeWidth, nativeHeight := v.NativeSize()
+		v.Transform.SetNaturalWidth(nativeWidth)
+		v.Transform.SetNaturalHeight(nativeHeight)
 	}
 
 	if v.nowVisible || v.forcedDirty || v.forcedTransformDirty {
@@ -79,19 +86,15 @@ func (v *Visualer) Draw(
 	}
 
 	// needs to be after we try and build
-	/*
-		if !root.InView(v.Transform) {
-			return
-		}
-	*/
-
-	v.Drawer.Draw(dest)
+	if !root.InView(v.Transform) {
+		return
+	}
 
 	// TODO: rotation and scale
 	offset.Translate(v.Transform.Position())
 
 	for _, child := range v.Children {
-		child.Draw(dest, offset, root)
+		child.Layout(offset, root)
 	}
 
 	// TODO: rotation and scale
@@ -101,4 +104,16 @@ func (v *Visualer) Draw(
 	v.nowVisible = false
 	v.forcedDirty = false
 	v.forcedTransformDirty = false
+}
+
+func (v *Visualer) Draw(dest *ebiten.Image) {
+	if !v.visible {
+		return
+	}
+
+	v.Drawer.Draw(dest)
+
+	for _, child := range v.Children {
+		child.Draw(dest)
+	}
 }

@@ -8,7 +8,6 @@ import (
 	// import png for image loading
 	_ "image/png"
 
-	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 
 	"github.com/hajimehoshi/ebiten/v2"

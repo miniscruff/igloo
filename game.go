@@ -2,6 +2,7 @@ package igloo
 
 import (
 	"errors"
+	"fmt"
 	"io/fs"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -78,16 +79,23 @@ func SetWindowSize(w, h int) {
 }
 
 // Update the top scene of the stack
-func (g *Game) Update() error {
+func (g *Game) Update() (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = r.(error)
+		}
+	}()
+
 	lastScene := g.scenes[len(g.scenes)-1]
 	lastScene.Ticker.Tick()
 	lastScene.Scene.Update()
 
 	if exit {
-		return errExit
+		err = errExit
+		return
 	}
 
-	return nil
+	return
 }
 
 // Draw all the game scenes, bottom up
@@ -104,7 +112,17 @@ func Push(scene Scene) {
 		Ticker: mathf.NewTicker(),
 	}
 
-	scene.Setup(game.assetLoader)
+	err := scene.Setup(game.assetLoader)
+	if err != nil {
+		panic(fmt.Errorf("setup: %w", err))
+	}
+
+	if post, ok := scene.(PostSetup); ok {
+		err = post.PostSetup()
+		if err != nil {
+			panic(fmt.Errorf("post setup: %w", err))
+		}
+	}
 
 	// force an update as well as it will be the newest scene
 	scene.Update()

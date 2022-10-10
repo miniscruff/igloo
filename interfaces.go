@@ -41,3 +41,9 @@ type Scene interface {
 
 	Setup(assetLoader *AssetLoader) error
 }
+
+// PostSetup is an optional interface for scenes that will trigger after setup
+// but before any update or draws so you can further refine the scene.
+type PostSetup interface {
+	PostSetup() error
+}
