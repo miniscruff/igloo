@@ -132,9 +132,18 @@ func Push(scene Scene) {
 
 // Pop a scene off the stack
 func Pop() {
-	lastScene := game.scenes[len(game.scenes)-1]
-	lastScene.Scene.Dispose()
-	lastScene.Ticker = nil
+	lastContext := game.scenes[len(game.scenes)-1]
+	lastScene := lastContext.Scene
+
+	if pre, ok := lastScene.(PreDispose); ok {
+		err := pre.PreDispose()
+		if err != nil {
+			panic(fmt.Errorf("predispose: %w", err))
+		}
+	}
+
+	lastScene.Dispose()
+	lastContext.Ticker = nil
 
 	game.scenes = game.scenes[:len(game.scenes)-1]
 }

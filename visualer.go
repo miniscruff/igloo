@@ -81,6 +81,7 @@ func (v *Visualer) Layout(
 		nativeWidth, nativeHeight := v.NativeSize()
 		v.Transform.SetNaturalWidth(nativeWidth)
 		v.Transform.SetNaturalHeight(nativeHeight)
+		v.Dirtier.Clean()
 	}
 
 	if v.nowVisible || v.forcedDirty || v.forcedTransformDirty {

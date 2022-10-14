@@ -47,3 +47,9 @@ type Scene interface {
 type PostSetup interface {
 	PostSetup() error
 }
+
+// PreDispose is an optional interface for scenes that will trigger before the
+// normal dispose when a scene is popped.
+type PreDispose interface {
+	PreDispose() error
+}
