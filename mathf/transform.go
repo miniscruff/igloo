@@ -164,6 +164,15 @@ func (t *Transform) SetNaturalHeight(naturalHeight float64) {
 	t.isDirty = true
 }
 
+func (t *Transform) SetFixedOffset(offset float64) {
+	if t.fixedOffset == offset {
+		return
+	}
+
+	t.fixedOffset = offset
+	t.isDirty = true
+}
+
 // ResetScale will set the width and height values to match the natural width
 // and height values.
 func (t *Transform) ResetScale() {

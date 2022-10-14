@@ -16,23 +16,18 @@ type LabelVisual struct {
 	*igloo.Visualer
 	ebiten.ColorM
 
-	label   *content.Label
+	font   *content.Font
 	text    string
 	isDirty bool
 }
 
-func NewLabelVisual(label *content.Label) *LabelVisual {
+func NewLabelVisual() *LabelVisual {
 	v := &LabelVisual{
-		label:   label,
 		isDirty: false,
 	}
 
-	lineHeight := float64(text.BoundString(label, "A").Dy())
-
 	v.Visualer = &igloo.Visualer{
-		Transform: mathf.NewTransform(
-			mathf.TransformWithFixedOffset(lineHeight),
-		),
+		Transform: mathf.NewTransform(),
 		Children:    make([]*igloo.Visualer, 0),
 		Dirtier:     v,
 		Drawer:      v,
@@ -48,6 +43,26 @@ func (v *LabelVisual) IsDirty() bool {
 
 func (v *LabelVisual) Clean() {
 	v.isDirty = false
+}
+
+func (v *LabelVisual) Font() *content.Font {
+	return v.font
+}
+
+func (v *LabelVisual) SetFont(f *content.Font) {
+	if v.font == f {
+		return
+	}
+
+	v.isDirty = true
+	v.font = f
+	v.Transform.SetFixedOffset(f.FixedOffset())
+
+	// not ideal but best for now
+	nw, nh := v.NativeSize()
+	v.Transform.SetNaturalWidth(nw)
+	v.Transform.SetNaturalHeight(nh)
+	v.Transform.ResetScale()
 }
 
 func (v *LabelVisual) Text() string {
@@ -70,15 +85,15 @@ func (v *LabelVisual) SetText(newText string) {
 }
 
 func (v *LabelVisual) NativeSize() (float64, float64) {
-	rect := text.BoundString(v.label, v.text)
+	rect := text.BoundString(v.font, v.text)
 	return float64(rect.Dx()), float64(rect.Dy())
 }
 
 func (v *LabelVisual) Draw(dest *ebiten.Image) {
-	text.DrawWithOptions(dest, v.text, v.label, &ebiten.DrawImageOptions{
+	text.DrawWithOptions(dest, v.text, v.font, &ebiten.DrawImageOptions{
 		GeoM:          v.Transform.GeoM(),
 		ColorM:        v.ColorM,
-		Filter:        v.label.Filter,
-		CompositeMode: v.label.CompositeMode,
+		Filter:        v.font.Filter,
+		CompositeMode: v.font.CompositeMode,
 	})
 }

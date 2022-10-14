@@ -12,6 +12,7 @@ type Visualer struct {
 	Drawer
 	NativeSizer
 
+	Parent   *Visualer
 	Children []*Visualer
 	visible  bool
 
@@ -22,6 +23,7 @@ type Visualer struct {
 
 func (v *Visualer) InsertChild(child *Visualer) {
 	v.Children = append(v.Children, child)
+	child.Parent = v
 }
 
 func (v *Visualer) Visible() bool {

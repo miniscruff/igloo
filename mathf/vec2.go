@@ -8,7 +8,8 @@ import (
 
 // Vec2 describes a 2D vector or point in floats
 type Vec2 struct {
-	X, Y float64
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
 }
 
 var (

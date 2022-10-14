@@ -14,9 +14,8 @@ type SpriteVisual struct {
 	isDirty bool
 }
 
-func NewSpriteVisual(sprite *content.Sprite) *SpriteVisual {
+func NewSpriteVisual() *SpriteVisual {
 	v := &SpriteVisual{
-		sprite:  sprite,
 		isDirty: true,
 	}
 
