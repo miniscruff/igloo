@@ -26,6 +26,12 @@ func (v *Visualer) InsertChild(child *Visualer) {
 	child.Parent = v
 }
 
+// ForceDirty can be called if you really need to force a rebuild of the transform
+// in the next layout.
+func (v *Visualer) ForceDirty() {
+	v.forcedDirty = true
+}
+
 func (v *Visualer) Visible() bool {
 	return v.visible
 }
