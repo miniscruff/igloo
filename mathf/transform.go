@@ -6,16 +6,18 @@ import (
 
 // Transform holds all data associated to a location
 type Transform struct {
-	position      Vec2    // x y of our anchor ( pivot )
+	position      Vec2    // x y of our pivot if not stretching
+	width         float64 // width before scaling if not stretched
+	height        float64 // height before scaling if not stretched
 	rotation      float64 // in radians
-	anchor        Vec2    // should be pivot
-	fixedOffset   float64 // text is drawn from the bottom, this option adjusts the anchor
-	width         float64 // width before scaling
-	height        float64 // height before scaling
+	pivot         Vec2    // normalized position where our transform is rotated and positioned around
+	anchors       Sides   // normalized position in the parent Transform of our corners
+	offsets       Sides   // absolute offsets of the corners relataive to ouor parent
+	fixedOffset   float64 // text is drawn from the bottom, this option adjusts the pivot
 	naturalWidth  float64 // native width of our source graphic
 	naturalHeight float64 // native height of our source graphic
 
-	bounds  Bounds
+	bounds  Bounds      // calculated bounding box
 	geom    ebiten.GeoM // calculated geom matrix
 	isDirty bool
 }
@@ -49,8 +51,8 @@ func (t *Transform) Rotation() float64 {
 	return t.rotation
 }
 
-func (t *Transform) Anchor() Vec2 {
-	return t.anchor
+func (t *Transform) Pivot() Vec2 {
+	return t.pivot
 }
 
 func (t *Transform) Width() float64 {
@@ -67,6 +69,14 @@ func (t *Transform) NaturalWidth() float64 {
 
 func (t *Transform) NaturalHeight() float64 {
 	return t.naturalHeight
+}
+
+func (t *Transform) Anchors() Sides {
+	return t.anchors
+}
+
+func (t *Transform) Offsets() Sides {
+	return t.offsets
 }
 
 // Position will return our position vector
@@ -104,12 +114,12 @@ func (t *Transform) SetRotation(rotation float64) {
 	t.isDirty = true
 }
 
-func (t *Transform) SetAnchor(anchor Vec2) {
-	if t.anchor == anchor {
+func (t *Transform) SetPivot(pivot Vec2) {
+	if t.pivot == pivot {
 		return
 	}
 
-	t.anchor = anchor
+	t.pivot = pivot
 	t.isDirty = true
 }
 
@@ -173,6 +183,102 @@ func (t *Transform) SetFixedOffset(offset float64) {
 	t.isDirty = true
 }
 
+// SetPosition will set our position to a different one
+func (t *Transform) SetPosition(pos Vec2) {
+	t.SetX(pos.X)
+	t.SetY(pos.Y)
+}
+
+func (t *Transform) SetAnchors(sides Sides) {
+	if t.anchors == sides {
+		return
+	}
+
+	t.anchors = sides
+	t.isDirty = true
+}
+
+func (t *Transform) SetOffsets(sides Sides) {
+	if t.offsets == sides {
+		return
+	}
+
+	t.offsets = sides
+	t.isDirty = true
+}
+
+func (t *Transform) SetLeftAnchor(value float64) {
+	if t.anchors.Left == value {
+		return
+	}
+
+	t.anchors.Left = value
+	t.isDirty = true
+}
+
+func (t *Transform) SetRightAnchor(value float64) {
+	if t.anchors.Right == value {
+		return
+	}
+
+	t.anchors.Right = value
+	t.isDirty = true
+}
+
+func (t *Transform) SetTopAnchor(value float64) {
+	if t.anchors.Top == value {
+		return
+	}
+
+	t.anchors.Top = value
+	t.isDirty = true
+}
+
+func (t *Transform) SetBottomAnchor(value float64) {
+	if t.anchors.Bottom == value {
+		return
+	}
+
+	t.anchors.Bottom = value
+	t.isDirty = true
+}
+
+func (t *Transform) SetLeftOffset(value float64) {
+	if t.offsets.Left == value {
+		return
+	}
+
+	t.offsets.Left = value
+	t.isDirty = true
+}
+
+func (t *Transform) SetRightOffset(value float64) {
+	if t.offsets.Right == value {
+		return
+	}
+
+	t.offsets.Right = value
+	t.isDirty = true
+}
+
+func (t *Transform) SetTopOffset(value float64) {
+	if t.offsets.Top == value {
+		return
+	}
+
+	t.offsets.Top = value
+	t.isDirty = true
+}
+
+func (t *Transform) SetBottomOffset(value float64) {
+	if t.offsets.Bottom == value {
+		return
+	}
+
+	t.offsets.Bottom = value
+	t.isDirty = true
+}
+
 // ResetScale will set the width and height values to match the natural width
 // and height values.
 func (t *Transform) ResetScale() {
@@ -183,12 +289,6 @@ func (t *Transform) ResetScale() {
 	t.width = t.naturalWidth
 	t.height = t.naturalHeight
 	t.isDirty = true
-}
-
-// SetPosition will set our position to a different one
-func (t *Transform) SetPosition(pos Vec2) {
-	t.SetX(pos.X)
-	t.SetY(pos.Y)
 }
 
 // Translate will move x and y by our vec2
@@ -222,8 +322,8 @@ func (t *Transform) TranslateY(y float64) {
 	t.isDirty = true
 }
 
-// Size of our transform
 func (t *Transform) Size() (float64, float64) {
+	// TODO: should use anchor values if stretched
 	return t.width, t.height
 }
 
@@ -244,138 +344,51 @@ func (t *Transform) InView(other *Transform) bool {
 // Build updates our ebiten.GeoM with updated values.
 // Be sure to only build a new GeoM if we need to.
 // Offset is the current world offset we should apply to our local values.
-func (t *Transform) Build(offset *Transform) {
+func (t *Transform) Build() {
 	t.geom.Reset()
 
-	// This is going to turn into a pretty large function
-	// right now it is pretty basic but we will have to handle
-	// anchoring, pivoting, proper scaling and other draw modes
+	/*
+		if t.anchorMin == t.anchorMax {
+			// TODO: world offset scale
+			if t.width != t.naturalWidth || t.height != t.naturalHeight {
+				t.geom.Scale(t.width/t.naturalWidth, t.height/t.naturalHeight)
+			}
 
-	// TODO: world offset scale
-	if t.width != t.naturalWidth || t.height != t.naturalHeight {
-		t.geom.Scale(t.width/t.naturalWidth, t.height/t.naturalHeight)
-	}
+			t.geom.Translate(-t.width*t.pivot.X, -t.height*t.pivot.Y+t.fixedOffset)
 
-	t.geom.Translate(-t.width*t.anchor.X, -t.height*t.anchor.Y+t.fixedOffset)
+			if t.rotation != 0 {
+				t.geom.Rotate(t.rotation)
+			}
 
-	if t.rotation != 0 {
-		t.geom.Rotate(t.rotation)
-	}
+			// log.Printf("xy, offset: %v, %v at %v", t.position, offset.position, t.position.Add(offset.position))
+			t.geom.Translate(t.X(), t.Y())
+			// t.geom.Translate(offset.X(), offset.Y())
+		} else {
+			pivotOffset := t.pivot.Mul(Vec2{X: t.width, Y: t.height})
+			topLeft := t.position.Sub(pivotOffset)
 
-	// log.Printf("xy, offset: %v, %v at %v", t.position, offset.position, t.position.Add(offset.position))
-	t.geom.Translate(t.X(), t.Y())
-	t.geom.Translate(offset.X(), offset.Y())
-
-	// TODO: these need to be in world values
-	anchorOffset := t.anchor.Mul(Vec2{X: t.width, Y: t.height})
-	topLeft := t.position.Sub(anchorOffset)
-
-	t.bounds = NewBoundsWidthHeight(
-		topLeft.X,
-		topLeft.Y,
-		t.width,
-		t.height,
-	)
-}
-
-type TransformOption func(t *Transform)
-
-func TransformAtPosition(position Vec2) TransformOption {
-	return func(t *Transform) {
-		t.position = position
-	}
-}
-
-func TransformAtXY(x, y float64) TransformOption {
-	return func(t *Transform) {
-		t.position.X = x
-		t.position.Y = y
-	}
-}
-
-func TransformWithRotation(rotation float64) TransformOption {
-	return func(t *Transform) {
-		t.rotation = rotation
-	}
-}
-
-func TransformWithWidth(width float64) TransformOption {
-	return func(t *Transform) {
-		t.width = width
-	}
-}
-
-func TransformWithHeight(height float64) TransformOption {
-	return func(t *Transform) {
-		t.height = height
-	}
-}
-
-// TransformWithNaturalWidth will set the transform natural width value
-// this will also override the current height to match
-func TransformWithNaturalWidth(naturalWidth float64) TransformOption {
-	return func(t *Transform) {
-		t.naturalWidth = naturalWidth
-		t.width = naturalWidth
-	}
-}
-
-// TransformWithNaturalHeight will set the transform natural height value
-// this will also override the current height to match
-func TransformWithNaturalHeight(naturalHeight float64) TransformOption {
-	return func(t *Transform) {
-		t.naturalHeight = naturalHeight
-		t.height = naturalHeight
-	}
-}
-
-func TransformWithSize(width, height float64) TransformOption {
-	return func(t *Transform) {
-		t.width = width
-		t.height = height
-	}
-}
-
-func TransformWithNaturalSize(naturalWidth, naturalHeight float64) TransformOption {
-	return func(t *Transform) {
-		t.naturalWidth = naturalWidth
-		t.naturalHeight = naturalHeight
-		t.width = naturalWidth
-		t.height = naturalHeight
-	}
-}
-
-func TransformWithAnchor(anchor Vec2) TransformOption {
-	return func(t *Transform) {
-		t.anchor = anchor
-	}
-}
-
-func TransformWithFixedOffset(offset float64) TransformOption {
-	return func(t *Transform) {
-		t.fixedOffset = offset
-	}
+			t.bounds = NewBoundsWidthHeight(
+				topLeft.X,
+				topLeft.Y,
+				t.width,
+				t.height,
+			)
+		}
+	*/
 }
 
 // NewTransform will create a new transform with:
-// * position at 0,0,
-// * rotation of 0 degress
-// * anchor at top left
-// * width, height, natural width and natural height are all 0
-// * you will have to set these before the first build
 // Note that transforms start dirty.
-func NewTransform(options ...TransformOption) *Transform {
+func NewTransform() *Transform {
 	t := &Transform{
 		position:    Vec2Zero,
 		rotation:    0,
-		anchor:      Vec2TopLeft,
+		pivot:       Vec2TopLeft,
+		anchors:     Sides{},
+		offsets:     Sides{},
 		fixedOffset: 0,
 		geom:        ebiten.GeoM{},
 		isDirty:     true,
-	}
-
-	for _, o := range options {
-		o(t)
 	}
 
 	return t

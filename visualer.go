@@ -48,10 +48,7 @@ func (v *Visualer) SetVisible(state bool) {
 	}
 }
 
-func (v *Visualer) Layout(
-	offset *mathf.Transform,
-	root *mathf.Transform,
-) {
+func (v *Visualer) Layout(root *mathf.Transform) {
 	if !v.visible {
 		return
 	}
@@ -91,7 +88,7 @@ func (v *Visualer) Layout(
 	}
 
 	if v.nowVisible || v.forcedDirty || v.forcedTransformDirty {
-		v.Transform.Build(offset)
+		v.Transform.Build()
 	}
 
 	// needs to be after we try and build
@@ -99,15 +96,9 @@ func (v *Visualer) Layout(
 		return
 	}
 
-	// TODO: rotation and scale
-	offset.Translate(v.Transform.Position())
-
 	for _, child := range v.Children {
-		child.Layout(offset, root)
+		child.Layout(root)
 	}
-
-	// TODO: rotation and scale
-	offset.Translate(v.Transform.Position().MulScalar(-1))
 
 	v.Transform.Clean()
 	v.nowVisible = false

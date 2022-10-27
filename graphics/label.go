@@ -16,7 +16,7 @@ type LabelVisual struct {
 	*igloo.Visualer
 	ebiten.ColorM
 
-	font   *content.Font
+	font    *content.Font
 	text    string
 	isDirty bool
 }
@@ -27,7 +27,7 @@ func NewLabelVisual() *LabelVisual {
 	}
 
 	v.Visualer = &igloo.Visualer{
-		Transform: mathf.NewTransform(),
+		Transform:   mathf.NewTransform(),
 		Children:    make([]*igloo.Visualer, 0),
 		Dirtier:     v,
 		Drawer:      v,
