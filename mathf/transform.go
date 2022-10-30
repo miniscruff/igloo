@@ -123,13 +123,31 @@ func (t *Transform) SetPivot(pivot Vec2) {
 	t.isDirty = true
 }
 
-func (t *Transform) SetWidth(width float64) {
-	if t.width == width {
+func (t *Transform) SetPivotX(x float64) {
+	if t.pivot.X == x {
 		return
 	}
 
+	t.pivot.X = x
+	t.isDirty = true
+}
+
+func (t *Transform) SetPivotY(y float64) {
+	if t.pivot.Y == y {
+		return
+	}
+
+	t.pivot.Y = y
+	t.isDirty = true
+}
+
+func (t *Transform) SetWidth(width float64) {
 	if width < 0 {
 		width = 0
+	}
+
+	if t.width == width {
+		return
 	}
 
 	t.width = width
@@ -137,12 +155,12 @@ func (t *Transform) SetWidth(width float64) {
 }
 
 func (t *Transform) SetHeight(height float64) {
-	if t.height == height {
-		return
+	if height <= 0 {
+		height = t.naturalHeight
 	}
 
-	if height < 0 {
-		height = 0
+	if t.height == height {
+		return
 	}
 
 	t.height = height
@@ -282,12 +300,13 @@ func (t *Transform) SetBottomOffset(value float64) {
 // ResetScale will set the width and height values to match the natural width
 // and height values.
 func (t *Transform) ResetScale() {
-	if t.width == t.naturalWidth && t.height == t.naturalHeight {
+	if (t.width == 0 || t.width == t.naturalWidth) &&
+		(t.height == 0 || t.height == t.naturalHeight) {
 		return
 	}
 
-	t.width = t.naturalWidth
-	t.height = t.naturalHeight
+	t.width = 0
+	t.height = 0
 	t.isDirty = true
 }
 
@@ -344,37 +363,68 @@ func (t *Transform) InView(other *Transform) bool {
 // Build updates our ebiten.GeoM with updated values.
 // Be sure to only build a new GeoM if we need to.
 // Offset is the current world offset we should apply to our local values.
-func (t *Transform) Build() {
+func (t *Transform) Build(parent *Transform) {
 	t.geom.Reset()
 
-	/*
-		if t.anchorMin == t.anchorMax {
-			// TODO: world offset scale
-			if t.width != t.naturalWidth || t.height != t.naturalHeight {
-				t.geom.Scale(t.width/t.naturalWidth, t.height/t.naturalHeight)
-			}
+	// check if we are stretched horizontally
+	// if so determine our width from our parent bounds
+	// if not use our defined width
+	// repeat for height
+	width := t.width
+	height := t.height
+	x := t.position.X
+	y := t.position.Y
+	parentOffset := Vec2Zero
 
-			t.geom.Translate(-t.width*t.pivot.X, -t.height*t.pivot.Y+t.fixedOffset)
+	if width == 0 {
+		width = t.naturalWidth
+	}
 
-			if t.rotation != 0 {
-				t.geom.Rotate(t.rotation)
-			}
+	if height == 0 {
+		height = t.naturalHeight
+	}
 
-			// log.Printf("xy, offset: %v, %v at %v", t.position, offset.position, t.position.Add(offset.position))
-			t.geom.Translate(t.X(), t.Y())
-			// t.geom.Translate(offset.X(), offset.Y())
+	if parent != nil {
+		parentOffset = Vec2{X: parent.bounds.X, Y: parent.bounds.Y}
+
+		if t.anchors.Left != t.anchors.Right {
+			width = parent.bounds.Width * (t.anchors.Right - t.anchors.Left)
+			width -= t.offsets.Left + t.offsets.Right
+
+			x = parent.bounds.X + t.anchors.Left*parent.bounds.Width + t.offsets.Left
 		} else {
-			pivotOffset := t.pivot.Mul(Vec2{X: t.width, Y: t.height})
-			topLeft := t.position.Sub(pivotOffset)
-
-			t.bounds = NewBoundsWidthHeight(
-				topLeft.X,
-				topLeft.Y,
-				t.width,
-				t.height,
-			)
+			parentOffset.X += parent.bounds.Width * t.anchors.Left
 		}
-	*/
+
+		if t.anchors.Top != t.anchors.Bottom {
+			height = parent.bounds.Height * (t.anchors.Bottom - t.anchors.Top)
+			height -= t.offsets.Top + t.offsets.Bottom
+
+			y = parent.bounds.Y + t.anchors.Top*parent.bounds.Height + t.offsets.Top
+		} else {
+			parentOffset.Y += parent.bounds.Height * t.anchors.Top
+		}
+	}
+
+	if width != t.naturalWidth || height != t.naturalHeight {
+		t.geom.Scale(width/t.naturalWidth, height/t.naturalHeight)
+	}
+
+	t.geom.Translate(-width*t.pivot.X, -height*t.pivot.Y+t.fixedOffset)
+
+	if t.rotation != 0 {
+		t.geom.Rotate(t.rotation)
+	}
+
+	t.geom.Translate(x, y)
+	t.geom.Translate(parentOffset.X, parentOffset.Y)
+
+	t.bounds = NewBoundsWidthHeight(
+		x+parentOffset.X,
+		y+parentOffset.Y,
+		width,
+		height,
+	)
 }
 
 // NewTransform will create a new transform with:

@@ -48,7 +48,7 @@ func (v *Visualer) SetVisible(state bool) {
 	}
 }
 
-func (v *Visualer) Layout(root *mathf.Transform) {
+func (v *Visualer) Layout(root, parent *mathf.Transform) {
 	if !v.visible {
 		return
 	}
@@ -88,7 +88,7 @@ func (v *Visualer) Layout(root *mathf.Transform) {
 	}
 
 	if v.nowVisible || v.forcedDirty || v.forcedTransformDirty {
-		v.Transform.Build()
+		v.Transform.Build(parent)
 	}
 
 	// needs to be after we try and build
@@ -97,7 +97,7 @@ func (v *Visualer) Layout(root *mathf.Transform) {
 	}
 
 	for _, child := range v.Children {
-		child.Layout(root)
+		child.Layout(root, v.Transform)
 	}
 
 	v.Transform.Clean()
