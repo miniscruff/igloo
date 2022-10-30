@@ -70,10 +70,6 @@ func (v *LabelVisual) SetText(newText string) {
 
 	v.text = newText
 	v.isDirty = true
-
-	// _, h := v.NativeSize()
-	// v.Transform.SetFixedOffset(v.font.Ascent() - h)
-	// v.Transform.ResetScale()
 }
 
 func (v *LabelVisual) NativeSize() (float64, float64) {
