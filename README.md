@@ -10,4 +10,14 @@ Extension framework to [ebiten](https://github.com/hajimehoshi/ebiten)
 
 ## Examples
 
-Coming soon, the go package docs is probably the easiest to read for now.
+Coming eventually, the go package docs is probably the easiest to read for now.
+
+## Required graphics
+
+[ ] Label
+[ ] Sprite
+[ ] Sliced Sprite ( 9, corners, empty center, etc )
+[ ] Sprite sheet loading
+[ ] Animated sprites
+[ ] Rich-ish text
+

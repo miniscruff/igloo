@@ -1,115 +1,72 @@
 package graphics
 
 import (
-	"image"
-
 	"github.com/hajimehoshi/ebiten/v2"
 
+	"github.com/miniscruff/igloo"
+	"github.com/miniscruff/igloo/content"
 	"github.com/miniscruff/igloo/mathf"
 )
 
-// Sprite represents a renderable element in the world.
-type Sprite struct {
-	Image     *ebiten.Image
-	Transform *mathf.Transform
-	Visible   bool
-	// DrawOptions when drawing, note that the GeoM value is controlled
-	// by the transform so changing it here will get overridden.
-	DrawOptions *ebiten.DrawImageOptions
+type SpriteVisual struct {
+	*igloo.Visualer
 
-	lastVisible bool
-	inView      bool
+	sprite  *content.Sprite
+	isDirty bool
 }
 
-// Draw will render the sprite onto the canvas.
-// If our transform, sprite or camera are dirty then we will update internal
-// values accordingly.
-func (s *Sprite) Draw(dest *ebiten.Image, camera Camera) {
-	turnedOn := s.Visible && !s.lastVisible
-	s.lastVisible = s.Visible
+func NewSpriteVisual() *SpriteVisual {
+	v := &SpriteVisual{
+		isDirty: true,
+	}
 
-	if !s.Visible {
+	v.Visualer = &igloo.Visualer{
+		Transform:   mathf.NewTransform(),
+		Children:    make([]*igloo.Visualer, 0),
+		Dirtier:     v,
+		Drawer:      v,
+		NativeSizer: v,
+	}
+
+	return v
+}
+
+func (v *SpriteVisual) Sprite() *content.Sprite {
+	return v.sprite
+}
+
+func (v *SpriteVisual) SetSprite(sprite *content.Sprite) {
+	if v.sprite == sprite {
 		return
 	}
 
-	if turnedOn || s.Transform.IsDirty() || camera.IsDirty() {
-		s.inView = camera.IsInView(s.Transform.Bounds())
-		if s.inView {
-			screenGeom := camera.WorldToScreen(s.Transform.GeoM())
-			s.DrawOptions.GeoM = screenGeom
-		}
-	}
-
-	if s.inView {
-		dest.DrawImage(s.Image, s.DrawOptions)
-	}
+	v.sprite = sprite
+	v.isDirty = true
 }
 
-// NewSprite will create a sprite with image and transform options.
-// Will configure transform to use the size of our image as the natural size.
-func NewSprite(image *ebiten.Image, options ...mathf.TransformOption) *Sprite {
-	w, h := image.Size()
-	// prepend our natural size option
-	options = append([]mathf.TransformOption{
-		mathf.TransformWithNaturalSize(float64(w), float64(h)),
-	}, options...)
-	transform := mathf.NewTransform(options...)
-
-	sprite := &Sprite{
-		Image:       image,
-		Transform:   transform,
-		Visible:     true,
-		lastVisible: true,
-		inView:      false,
-		DrawOptions: &ebiten.DrawImageOptions{},
-	}
-
-	return sprite
+func (v *SpriteVisual) IsDirty() bool {
+	return v.isDirty
 }
 
-func NewSpriteWithDrawOptions(
-	image *ebiten.Image,
-	drawOptions ebiten.DrawImageOptions,
-	options ...mathf.TransformOption,
-) *Sprite {
-	w, h := image.Size()
-	// prepend our natural size option
-	options = append([]mathf.TransformOption{
-		mathf.TransformWithNaturalSize(float64(w), float64(h)),
-	}, options...)
-	transform := mathf.NewTransform(options...)
-
-	sprite := &Sprite{
-		Image:       image,
-		Transform:   transform,
-		Visible:     true,
-		lastVisible: true,
-		inView:      false,
-		DrawOptions: &drawOptions,
-	}
-
-	return sprite
+func (v *SpriteVisual) Clean() {
+	v.isDirty = false
 }
 
-// NewSprite will create a sprite with image and transform.
-// Will configure transform to use the size of our image as the natural size.
-func NewSpriteWithTransform(image *ebiten.Image, transform *mathf.Transform) *Sprite {
-	w, h := image.Size()
-	transform.SetNaturalWidth(float64(w))
-	transform.SetNaturalHeight(float64(h))
-
-	sprite := &Sprite{
-		Image:       image,
-		Transform:   transform,
-		Visible:     true,
-		lastVisible: true,
-		inView:      false,
-		DrawOptions: &ebiten.DrawImageOptions{},
-	}
-
-	return sprite
+func (v *SpriteVisual) NativeSize() (float64, float64) {
+	pt := v.sprite.Image.Bounds().Size()
+	return float64(pt.X), float64(pt.Y)
 }
 
+func (v *SpriteVisual) Draw(dest *ebiten.Image) {
+	dest.DrawImage(v.sprite.Image, &ebiten.DrawImageOptions{
+		GeoM:          v.Transform.GeoM(),
+		ColorM:        v.sprite.ColorM,
+		Filter:        v.sprite.Filter,
+		CompositeMode: v.sprite.CompositeMode,
+	})
+}
+
+/*
 // SpriteSheet represents a collection of images
 type SpriteSheet []*ebiten.Image
 
@@ -161,3 +118,4 @@ func NewFrameClip(
 
 	return t
 }
+*/

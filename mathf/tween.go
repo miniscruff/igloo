@@ -6,7 +6,7 @@ type TweenValueFunc func(value float64)
 type TweenRepeatMode string
 
 const (
-	// Does not repeat, will trigger complete and be removed from ticker
+	// Does not repeat, will trigger complete event
 	TweenNoRepeat TweenRepeatMode = "NoRepeat"
 	// Repeats the tween from the start over and over again
 	TweenRepeatLoop TweenRepeatMode = "Loop"
@@ -14,15 +14,12 @@ const (
 	TweenRepeatBounceLoop TweenRepeatMode = "RepeatBounce"
 	// Bounces the tween going from 0>1>0, reversing the ease to get a good bounce
 	TweenRepeatBounce TweenRepeatMode = "Bounce"
-	// Pauses the tween at the end ready to start again
-	TweenRepeatPause TweenRepeatMode = "Pause"
 )
 
 type Tween struct {
 	duration   float64
 	percent    float64
 	isPaused   bool
-	isComplete bool
 	easeFunc   EaseFunc
 	valueFunc  TweenValueFunc
 	repeat     TweenRepeatMode
@@ -53,12 +50,6 @@ func NewTween(duration float64, options ...TweenOption) *Tween {
 	return t
 }
 
-func (t *Tween) Start() {
-	t.Resume()
-	t.started(t)
-	t.firstStart = false
-}
-
 // Bounce will start the tween bouncing back if the
 // tween was not yet complete
 func (t *Tween) Bounce() {
@@ -66,7 +57,7 @@ func (t *Tween) Bounce() {
 		t.isBouncing = !t.isBouncing
 	}
 
-	t.Start()
+	t.Resume()
 }
 
 func (t *Tween) Pause() {
@@ -85,20 +76,14 @@ func (t *Tween) IsPaused() bool {
 	return t.isPaused
 }
 
-func (t *Tween) IsComplete() bool {
-	return t.isComplete
-}
-
-func (t *Tween) Tick(gameTime *GameTime) {
-	t.percent += gameTime.DeltaTime() / t.duration
-
+func (t *Tween) Tick() {
 	if t.percent >= 1 {
 		t.percent = 1
 
 		// handle completion based on repeat mode
 		switch t.repeat {
 		case TweenNoRepeat:
-			t.isComplete = true
+			t.isPaused = true
 		case TweenRepeatLoop:
 			t.percent = 0
 		case TweenRepeatBounceLoop:
@@ -107,8 +92,6 @@ func (t *Tween) Tick(gameTime *GameTime) {
 		case TweenRepeatBounce:
 			t.isBouncing = !t.isBouncing
 			t.percent = 0
-			t.isPaused = true
-		case TweenRepeatPause:
 			t.isPaused = true
 		}
 

@@ -2,40 +2,13 @@ package igloo
 
 import (
 	"errors"
+	"fmt"
+	"io/fs"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/miniscruff/igloo/mathf"
 )
-
-// Dirtier allows structs to track when they are changed and only apply
-// complex changes when there is something new to update.
-type Dirtier interface {
-	// IsDirty returns whether or not our object is dirty
-	IsDirty() bool
-	// Clean the object back to a fresh state
-	Clean()
-}
-
-// Scene is a core component of logic and rendering.
-// The core methods are update and draw to handle game logic and rendering.
-type Scene interface {
-	Updater
-	Disposer
-
-	// Draw all game elements.
-	Draw(screen *ebiten.Image)
-}
-
-// Updater is the default updating method
-type Updater interface {
-	Update(*mathf.GameTime)
-}
-
-// Disposer lets content be disposed of properly
-type Disposer interface {
-	Dispose()
-}
 
 var (
 	game    *Game
@@ -43,10 +16,23 @@ var (
 	errExit = errors.New("exiting game")
 )
 
+type SceneContext struct {
+	Scene  Scene
+	Ticker *mathf.Ticker
+}
+
+// GameConfig contains values you should set when initializing
+// that can only be configured at start.
+type GameConfig struct {
+	Fsys       fs.FS
+	AssetsPath string
+}
+
 type Game struct {
-	gameTime      *mathf.GameTime
-	ticker        *mathf.Ticker
-	scenes        []Scene
+	scenes      []*SceneContext
+	assetLoader *AssetLoader
+
+	// window values
 	outsideWidth  int
 	outsideHeight int
 	screenWidth   int
@@ -94,42 +80,73 @@ func SetWindowSize(w, h int) {
 }
 
 // Update the top scene of the stack
-func (g *Game) Update() error {
-	g.ticker.Tick(g.gameTime)
+func (g *Game) Update() (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = r.(error)
+		}
+	}()
+
 	lastScene := g.scenes[len(g.scenes)-1]
-	lastScene.Update(g.gameTime)
+	lastScene.Ticker.Tick()
+	lastScene.Scene.Update()
 
 	if exit {
-		return errExit
+		err = errExit
+		return
 	}
 
-	return nil
+	return
 }
 
 // Draw all the game scenes, bottom up
 func (g *Game) Draw(dest *ebiten.Image) {
 	for _, s := range g.scenes {
-		s.Draw(dest)
+		s.Scene.Draw(dest)
 	}
 }
 
 // Push a new scene to the top of the stack
 func Push(scene Scene) {
-	game.scenes = append(game.scenes, scene)
+	context := &SceneContext{
+		Scene:  scene,
+		Ticker: mathf.NewTicker(),
+	}
+
+	err := scene.Setup(game.assetLoader)
+	if err != nil {
+		panic(fmt.Errorf("setup: %w", err))
+	}
+
+	if post, ok := scene.(PostSetup); ok {
+		err = post.PostSetup()
+		if err != nil {
+			panic(fmt.Errorf("post setup: %w", err))
+		}
+	}
+
 	// force an update as well as it will be the newest scene
-	scene.Update(game.gameTime)
+	scene.Update()
+
+	game.scenes = append(game.scenes, context)
 }
 
 // Pop a scene off the stack
 func Pop() {
-	lastScene := game.scenes[len(game.scenes)-1]
+	lastContext := game.scenes[len(game.scenes)-1]
+	lastScene := lastContext.Scene
+
+	if pre, ok := lastScene.(PreDispose); ok {
+		err := pre.PreDispose()
+		if err != nil {
+			panic(fmt.Errorf("predispose: %w", err))
+		}
+	}
+
 	lastScene.Dispose()
 
+	lastContext.Ticker = nil
 	game.scenes = game.scenes[:len(game.scenes)-1]
-}
-
-func AddTicker(imp mathf.TickerImp) {
-	game.ticker.Add(imp)
 }
 
 // Exit the game at the end of the next update
@@ -137,12 +154,11 @@ func Exit() {
 	exit = true
 }
 
-func InitGame() {
+func InitGame(config GameConfig) {
 	game = &Game{
-		gameTime:     mathf.NewGameTime(),
-		ticker:       mathf.NewTicker(),
 		screenWidth:  800,
 		screenHeight: 600,
+		assetLoader:  NewAssetLoader(config.Fsys, config.AssetsPath),
 	}
 	exit = false
 }

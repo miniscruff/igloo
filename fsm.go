@@ -14,18 +14,20 @@ func NewFSMTransition[T ~string](from T, to ...T) FSMTransition[T] {
 
 // FSM is a mini finite state machine
 type FSM[T ~string] struct {
-	current     T
-	last        T
-	transitions map[T]map[T]struct{}
-	handlers    map[T]*EventStoreZero
+	current      T
+	last         T
+	transitions  map[T]map[T]struct{}
+	fromHandlers map[T]*EventStoreZero
+	toHandlers   map[T]*EventStoreZero
 }
 
 // NewWatchable will create a watchable with a starting value
 func NewFSM[T ~string](startingValue T, transitions ...FSMTransition[T]) *FSM[T] {
 	fsm := &FSM[T]{
-		current:     startingValue,
-		transitions: make(map[T]map[T]struct{}),
-		handlers:    make(map[T]*EventStoreZero),
+		current:      startingValue,
+		transitions:  make(map[T]map[T]struct{}),
+		fromHandlers: make(map[T]*EventStoreZero),
+		toHandlers:   make(map[T]*EventStoreZero),
 	}
 	for _, t := range transitions {
 		fsm.transitions[t.From] = map[T]struct{}{}
@@ -66,17 +68,29 @@ func (fsm *FSM[T]) Transition(value T) bool {
 	fsm.last = fsm.current
 	fsm.current = value
 
-	if fsm.handlers[value] != nil {
-		fsm.handlers[value].Publish()
+	if fsm.fromHandlers[fsm.last] != nil {
+		fsm.fromHandlers[fsm.last].Publish()
+	}
+
+	if fsm.toHandlers[value] != nil {
+		fsm.toHandlers[value].Publish()
 	}
 
 	return true
 }
 
-func (fsm *FSM[T]) OnTransition(state T, handler EventHandlerZero) {
-	if fsm.handlers[state] == nil {
-		fsm.handlers[state] = &EventStoreZero{}
+func (fsm *FSM[T]) OnTransitionTo(state T, handler EventHandlerZero) {
+	if fsm.toHandlers[state] == nil {
+		fsm.toHandlers[state] = &EventStoreZero{}
 	}
 
-	fsm.handlers[state].Subscribe(handler)
+	fsm.toHandlers[state].Subscribe(handler)
+}
+
+func (fsm *FSM[T]) OnTransitionFrom(state T, handler EventHandlerZero) {
+	if fsm.fromHandlers[state] == nil {
+		fsm.fromHandlers[state] = &EventStoreZero{}
+	}
+
+	fsm.fromHandlers[state].Subscribe(handler)
 }
