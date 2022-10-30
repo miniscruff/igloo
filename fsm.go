@@ -14,20 +14,20 @@ func NewFSMTransition[T ~string](from T, to ...T) FSMTransition[T] {
 
 // FSM is a mini finite state machine
 type FSM[T ~string] struct {
-	current     T
-	last        T
-	transitions map[T]map[T]struct{}
-	fromHandlers    map[T]*EventStoreZero
-	toHandlers    map[T]*EventStoreZero
+	current      T
+	last         T
+	transitions  map[T]map[T]struct{}
+	fromHandlers map[T]*EventStoreZero
+	toHandlers   map[T]*EventStoreZero
 }
 
 // NewWatchable will create a watchable with a starting value
 func NewFSM[T ~string](startingValue T, transitions ...FSMTransition[T]) *FSM[T] {
 	fsm := &FSM[T]{
-		current:     startingValue,
-		transitions: make(map[T]map[T]struct{}),
-		fromHandlers:    make(map[T]*EventStoreZero),
-		toHandlers:    make(map[T]*EventStoreZero),
+		current:      startingValue,
+		transitions:  make(map[T]map[T]struct{}),
+		fromHandlers: make(map[T]*EventStoreZero),
+		toHandlers:   make(map[T]*EventStoreZero),
 	}
 	for _, t := range transitions {
 		fsm.transitions[t.From] = map[T]struct{}{}
