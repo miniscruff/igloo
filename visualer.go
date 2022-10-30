@@ -42,10 +42,7 @@ func (v *Visualer) SetVisible(state bool) {
 	}
 
 	v.visible = state
-
-	if state {
-		v.nowVisible = true
-	}
+	v.nowVisible = state
 }
 
 func (v *Visualer) Layout(root, parent *mathf.Transform) {
@@ -56,8 +53,7 @@ func (v *Visualer) Layout(root, parent *mathf.Transform) {
 	// if we were just turned on, set it to all our children
 	if v.nowVisible {
 		for _, child := range v.Children {
-			child.visible = true
-			child.nowVisible = true
+			child.SetVisible(true)
 		}
 	}
 
@@ -72,6 +68,7 @@ func (v *Visualer) Layout(root, parent *mathf.Transform) {
 
 	// if our own visual is dirty, force our children to be as well
 	if v.Dirtier.IsDirty() || v.forcedDirty {
+		v.forcedDirty = true
 		for _, child := range v.Children {
 			child.forcedDirty = true
 		}
@@ -92,15 +89,12 @@ func (v *Visualer) Layout(root, parent *mathf.Transform) {
 	}
 
 	// needs to be after we try and build
-	if !root.InView(v.Transform) {
-		return
+	if root.InView(v.Transform) {
+		for _, child := range v.Children {
+			child.Layout(root, v.Transform)
+		}
 	}
 
-	for _, child := range v.Children {
-		child.Layout(root, v.Transform)
-	}
-
-	v.Transform.Clean()
 	v.nowVisible = false
 	v.forcedDirty = false
 	v.forcedTransformDirty = false
@@ -111,9 +105,9 @@ func (v *Visualer) Draw(dest *ebiten.Image) {
 		return
 	}
 
-	v.Drawer.Draw(dest)
-
 	for _, child := range v.Children {
 		child.Draw(dest)
 	}
+
+	v.Drawer.Draw(dest)
 }

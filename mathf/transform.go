@@ -201,6 +201,10 @@ func (t *Transform) SetFixedOffset(offset float64) {
 	t.isDirty = true
 }
 
+func (t *Transform) FixedOffset() float64 {
+	return t.fixedOffset
+}
+
 // SetPosition will set our position to a different one
 func (t *Transform) SetPosition(pos Vec2) {
 	t.SetX(pos.X)
@@ -374,7 +378,6 @@ func (t *Transform) Build(parent *Transform) {
 	height := t.height
 	x := t.position.X
 	y := t.position.Y
-	parentOffset := Vec2Zero
 
 	if width == 0 {
 		width = t.naturalWidth
@@ -385,24 +388,24 @@ func (t *Transform) Build(parent *Transform) {
 	}
 
 	if parent != nil {
-		parentOffset = Vec2{X: parent.bounds.X, Y: parent.bounds.Y}
 
 		if t.anchors.Left != t.anchors.Right {
 			width = parent.bounds.Width * (t.anchors.Right - t.anchors.Left)
 			width -= t.offsets.Left + t.offsets.Right
 
-			x = parent.bounds.X + t.anchors.Left*parent.bounds.Width + t.offsets.Left
+			x = parent.bounds.X + parent.bounds.Width*t.anchors.Left + t.offsets.Left
 		} else {
-			parentOffset.X += parent.bounds.Width * t.anchors.Left
+			x += parent.bounds.X
+			x += parent.bounds.Width * t.anchors.Left
 		}
 
 		if t.anchors.Top != t.anchors.Bottom {
 			height = parent.bounds.Height * (t.anchors.Bottom - t.anchors.Top)
 			height -= t.offsets.Top + t.offsets.Bottom
 
-			y = parent.bounds.Y + t.anchors.Top*parent.bounds.Height + t.offsets.Top
+			y = parent.bounds.Y + parent.bounds.Height*t.anchors.Top + t.offsets.Top
 		} else {
-			parentOffset.Y += parent.bounds.Height * t.anchors.Top
+			y += parent.bounds.Y + parent.bounds.Height*t.anchors.Top
 		}
 	}
 
@@ -417,14 +420,14 @@ func (t *Transform) Build(parent *Transform) {
 	}
 
 	t.geom.Translate(x, y)
-	t.geom.Translate(parentOffset.X, parentOffset.Y)
 
 	t.bounds = NewBoundsWidthHeight(
-		x+parentOffset.X,
-		y+parentOffset.Y,
+		x-width*t.pivot.X,
+		y-height*t.pivot.Y,
 		width,
 		height,
 	)
+	t.Clean()
 }
 
 // NewTransform will create a new transform with:
@@ -434,8 +437,8 @@ func NewTransform() *Transform {
 		position:    Vec2Zero,
 		rotation:    0,
 		pivot:       Vec2TopLeft,
-		anchors:     Sides{},
-		offsets:     Sides{},
+		anchors:     SidesTopLeft,
+		offsets:     SidesTopLeft,
 		fixedOffset: 0,
 		geom:        ebiten.GeoM{},
 		isDirty:     true,

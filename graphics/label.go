@@ -54,15 +54,9 @@ func (v *LabelVisual) SetFont(f *content.Font) {
 		return
 	}
 
-	v.isDirty = true
+	v.Transform.SetFixedOffset(f.Ascent())
 	v.font = f
-	v.Transform.SetFixedOffset(f.FixedOffset())
-
-	// not ideal but best for now
-	nw, nh := v.NativeSize()
-	v.Transform.SetNaturalWidth(nw)
-	v.Transform.SetNaturalHeight(nh)
-	v.Transform.ResetScale()
+	v.isDirty = true
 }
 
 func (v *LabelVisual) Text() string {
@@ -77,16 +71,18 @@ func (v *LabelVisual) SetText(newText string) {
 	v.text = newText
 	v.isDirty = true
 
-	// not ideal but best for now
-	nw, nh := v.NativeSize()
-	v.Transform.SetNaturalWidth(nw)
-	v.Transform.SetNaturalHeight(nh)
-	v.Transform.ResetScale()
+	// _, h := v.NativeSize()
+	// v.Transform.SetFixedOffset(v.font.Ascent() - h)
+	// v.Transform.ResetScale()
 }
 
 func (v *LabelVisual) NativeSize() (float64, float64) {
 	rect := text.BoundString(v.font, v.text)
-	return float64(rect.Dx()), float64(rect.Dy())
+	w, h := float64(rect.Dx()), float64(rect.Dy())
+	if h < v.font.LineHeight() {
+		h = v.font.LineHeight()
+	}
+	return w, h
 }
 
 func (v *LabelVisual) Draw(dest *ebiten.Image) {
