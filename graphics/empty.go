@@ -2,6 +2,7 @@ package graphics
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/miniscruff/igloo"
 	"github.com/miniscruff/igloo/mathf"
 )
@@ -19,6 +20,7 @@ func NewEmptyVisual() *EmptyVisual {
 		Drawer:      ev,
 		NativeSizer: ev,
 	}
+
 	return ev
 }
 

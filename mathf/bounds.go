@@ -55,4 +55,3 @@ func (b Bounds) Surrounds(o Bounds) bool {
 		b.Y < o.Y &&
 		b.Bottom() > o.Bottom())
 }
-

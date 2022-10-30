@@ -9,8 +9,6 @@ linters-settings:
   goconst:
     min-len: 2
     min-occurrences: 3
-  gocyclo:
-    min-complexity: 15
   goimports:
     local-prefixes: github.com/miniscruff/igloo
   govet:
@@ -36,7 +34,6 @@ linters:
     - gochecknoinits
     - goconst
     - gocritic
-    - gocyclo
     - godox
     - gofmt
     - goimports
@@ -61,14 +58,3 @@ linters:
     - unused
     - whitespace
     - wsl
-  # don't enable:
-  # - asciicheck
-  # - gochecknoglobals
-  # - gocognit
-  # - godot
-  # - gomnd too many magic numbers
-  # - goerr113
-  # - maligned
-  # - nestif
-  # - prealloc
-  # - wsl

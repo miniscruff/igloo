@@ -346,7 +346,6 @@ func (t *Transform) TranslateY(y float64) {
 }
 
 func (t *Transform) Size() (float64, float64) {
-	// TODO: should use anchor values if stretched
 	return t.width, t.height
 }
 
@@ -355,7 +354,6 @@ func (t *Transform) NaturalSize() (float64, float64) {
 }
 
 // Bounds of our transform
-// NOTE: does not take into account rotation yet...
 func (t *Transform) Bounds() Bounds {
 	return t.bounds
 }
@@ -388,7 +386,6 @@ func (t *Transform) Build(parent *Transform) {
 	}
 
 	if parent != nil {
-
 		if t.anchors.Left != t.anchors.Right {
 			width = parent.bounds.Width * (t.anchors.Right - t.anchors.Left)
 			width -= t.offsets.Left + t.offsets.Right

@@ -1,7 +1,5 @@
 package mathf
 
-// TODO: write tests and fix any looping issues
-
 type TweenStatusChangedFunc func(tween *Tween)
 type TweenValueFunc func(value float64)
 
@@ -79,8 +77,6 @@ func (t *Tween) IsPaused() bool {
 }
 
 func (t *Tween) Tick() {
-	// TODO: BROKEN
-
 	if t.percent >= 1 {
 		t.percent = 1
 

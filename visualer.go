@@ -2,6 +2,7 @@ package igloo
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/miniscruff/igloo/mathf"
 )
 

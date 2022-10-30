@@ -75,9 +75,11 @@ func (v *LabelVisual) SetText(newText string) {
 func (v *LabelVisual) NativeSize() (float64, float64) {
 	rect := text.BoundString(v.font, v.text)
 	w, h := float64(rect.Dx()), float64(rect.Dy())
+
 	if h < v.font.LineHeight() {
 		h = v.font.LineHeight()
 	}
+
 	return w, h
 }
 

@@ -1,4 +1,5 @@
 package mathf
+
 /*
 
 type TimerCompleteFunc func()

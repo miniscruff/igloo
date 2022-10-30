@@ -6,6 +6,7 @@ import (
 	"io/fs"
 
 	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/miniscruff/igloo/mathf"
 )
 
@@ -143,8 +144,8 @@ func Pop() {
 	}
 
 	lastScene.Dispose()
-	lastContext.Ticker = nil
 
+	lastContext.Ticker = nil
 	game.scenes = game.scenes[:len(game.scenes)-1]
 }
 
