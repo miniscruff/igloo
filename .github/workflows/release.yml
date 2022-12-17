@@ -17,7 +17,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Install Changie
-      uses: supplypike/setup-bin@v2
+      uses: supplypike/setup-bin@v3
       with:
         uri: 'https://github.com/miniscruff/changie/releases/download/v${{ env.CHANGIE_VERSION }}/changie_${{ env.CHANGIE_VERSION }}_linux_amd64.tar.gz'
         name: 'changie'
