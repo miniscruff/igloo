@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.4.16
-	golang.org/x/image v0.3.0
+	golang.org/x/image v0.4.0
 )
 
 require (
@@ -15,5 +15,5 @@ require (
 	golang.org/x/exp v0.0.0-20190731235908-ec7cb31e5a56 // indirect
 	golang.org/x/mobile v0.0.0-20220722155234-aaac322e2105 // indirect
 	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
-	golang.org/x/text v0.6.0 // indirect
+	golang.org/x/text v0.7.0 // indirect
 )
