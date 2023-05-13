@@ -3,7 +3,7 @@ module github.com/miniscruff/igloo
 go 1.18
 
 require (
-	github.com/hajimehoshi/ebiten/v2 v2.5.3
+	github.com/hajimehoshi/ebiten/v2 v2.5.4
 	golang.org/x/image v0.7.0
 )
 
